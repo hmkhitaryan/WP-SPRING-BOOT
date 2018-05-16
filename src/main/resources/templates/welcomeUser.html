@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en">
+<head>
+    <a href="/toMap" th:text="#{document.tomap.text}"></a>
+
+    <title>Welcome Page</title>
+    <link rel="stylesheet" th:href="@{/bootstrap.min.css/}"/>
+
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+</head>
+<body>
+
+<div class="generic-container">
+    <div class="panel panel-default">
+        <div th:if="${#request.userPrincipal.name != null}">
+            <form id="logoutForm" method="POST" action="/logout">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+            <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}"></h2>
+            <div class="tablecontainer">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th th:text="#{id.label}"></th>
+                        <th th:text="#{firstName.label}"></th>
+                        <th th:text="#{lastName.label}"></th>
+                        <th th:text="#{email.label}"></th>
+                        <th th:text="#{dateCreated.label}"></th>
+                        <th th:text="#{skypeID.label}"></th>
+                        <th width="100"></th>
+                        <th width="100"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span th:text="${userForm.id}"></span></td>
+                        <td><span th:text="${userForm.firstName}"></span></td>
+                        <td><span th:text="${userForm.lastName}"></span></td>
+                        <td><span th:text="${userForm.email}"></span></td>
+                        <td><span th:text="${userForm.dateRegistered}"></span></td>
+                        <td><span th:text="${userForm.skypeID}"></span></td>
+                        <td><a th:href="@{'edit/user/' + ${userForm.id}}" class="btn btn-success custom-width"
+                               th:text="#{button.edit.label}"></a></td>
+                        <td><a th:href="@{'delete/user/' + ${userForm.id}}" class="btn btn-danger custom-width"
+                               th:text="#{button.delete.label}"></a></td>
+                    </tr>
+                    <div class="pull-right" style="padding-right:50px">
+                        <a href="?language=en">English</a>|<a href="?language=fr">French</a>
+                    </div>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <span class="well pull-left">
+            <a th:href="@{'/add/document/' + ${userForm.id}}" th:text="#{document.upload.text}"></a>
+        </span>
+
+        <span class="well pull-left">
+            <a onclick="document.forms['logoutForm'].submit()" th:text="#{button.logout.label}"></a>
+        </span>
+    </div>
+</div>
+
+<!-- /container -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js/}"></script>
+</body>
+</html>

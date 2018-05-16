@@ -6,7 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -14,11 +16,12 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import java.util.Locale;
 
 @Configuration
-public class GeneralConfig {
+public class GeneralConfig extends WebMvcConfigurerAdapter {
+
     @Bean(name = "multipartResolver")
     public CommonsMultipartResolver getMultipartResolver() {
         final CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(10240000);
+        resolver.setMaxUploadSize(10240000);
 
         return resolver;
     }
@@ -46,11 +49,16 @@ public class GeneralConfig {
     }
 
     @Bean
-    public LocaleChangeInterceptor localeInterceptor() {
+    public LocaleChangeInterceptor localeChangeInterceptor() {
         final LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("language");
 
         return interceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
     }
 }
 
