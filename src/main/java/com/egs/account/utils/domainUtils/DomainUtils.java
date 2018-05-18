@@ -1,6 +1,7 @@
 package com.egs.account.utils.domainUtils;
 
 import com.egs.account.exception.DocumentNotFoundException;
+import com.egs.account.exception.DocumentOutOfBoundException;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
@@ -38,7 +39,12 @@ public class DomainUtils {
     private void saveDocument(FileBucket fileBucket, User user) throws IOException {
         final Catalog document = new Catalog();
         final MultipartFile multipartFile = fileBucket.getFile();
-
+        if(multipartFile == null){
+            return;
+        }
+        if(multipartFile.getSize() > 100000) {
+            throw new DocumentOutOfBoundException("document size is out of its bound");
+        }
         document.setLink(multipartFile.getOriginalFilename());
         document.setComment(fileBucket.getComment());
         document.setContent(multipartFile.getBytes());

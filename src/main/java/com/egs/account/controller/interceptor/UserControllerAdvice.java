@@ -1,6 +1,7 @@
 package com.egs.account.controller.interceptor;
 
 import com.egs.account.exception.DocumentNotFoundException;
+import com.egs.account.exception.DocumentOutOfBoundException;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
+import static com.egs.account.mapping.UIAttribute.DOC_OUT_OF_BOUND;
 import static com.egs.account.mapping.UIAttribute.NOT_FOUND;
 
 /**
@@ -31,21 +33,27 @@ public class UserControllerAdvice {
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ModelAndView handleUserError() {
-        final ModelAndView modelAndView = new ModelAndView();
-        final String domain = messageSource.getMessage("account.user.label", null, null);
-        modelAndView.addObject(UIAttribute.DOMAIN, domain);
-        modelAndView.setViewName(NOT_FOUND);
-
-        return modelAndView;
+    public ModelAndView handleUserNotFoundException() {
+        return initModelAndView("account.user.label", NOT_FOUND);
     }
 
     @ExceptionHandler(DocumentNotFoundException.class)
-    public ModelAndView handleDocumentError() {
+    public ModelAndView handleDocumentNotFoundException() {
+        return initModelAndView("account.document.label", NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(DocumentOutOfBoundException.class)
+    public ModelAndView handleDocumentOutOfBoundException() {
+        return initModelAndView("account.document.label", DOC_OUT_OF_BOUND);
+    }
+
+
+    private ModelAndView initModelAndView(String s, String notFound) {
         final ModelAndView modelAndView = new ModelAndView();
-        final String domain = messageSource.getMessage("account.document.label", null, null);
+        final String domain = messageSource.getMessage(s, null, null);
         modelAndView.addObject(UIAttribute.DOMAIN, domain);
-        modelAndView.setViewName(NOT_FOUND);
+        modelAndView.setViewName(notFound);
 
         return modelAndView;
     }

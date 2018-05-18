@@ -1,0 +1,26 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Registration Confirmation Page</title>
+    <link rel="stylesheet" th:href="@{/bootstrap.min.css/}"/>
+    <link rel="stylesheet" th:href="@{/app.css/}"/>
+</head>
+<body>
+<div class="pull-right" style="padding-right:50px">
+    <a href="?language=en">English</a>|<a href="?language=fr">French</a>
+</div>
+<div class="generic-container">
+    <div class="alert alert-success lead">
+        <span th:text="${success}" class="success"></span>
+    </div>
+    <span class="well pull-left">
+		 <a th:href="@{'/add/document/' + ${userForm.id}}" th:text="#{document.upload.text}"
+            class="btn btn-primary btn-sm"></a>
+    </span>
+    <span class="well pull-right">Go to <a href="/welcome" class="btn btn-success custom-width"
+                                           th:text="#{button.yourPage.label}"></a>
+			<a href="/logout" class="btn btn-success custom-width" th:text="#{button.loginPage.label}"></a>
+    </span>
+</div>
+</body>
+
+</html>

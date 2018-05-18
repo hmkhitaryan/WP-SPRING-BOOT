@@ -8,9 +8,9 @@ import com.egs.account.model.User;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
-import com.egs.account.service.validator.FileValidationService;
-import com.egs.account.service.validator.UserValidationService;
+import com.egs.account.service.validator.ValidationService;
 import com.egs.account.utils.domainUtils.DomainUtils;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +21,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,9 +45,6 @@ public class UserController {
     private static final String MAP = "map";
 
     @Autowired
-    FileValidationService fileValidator;
-
-    @Autowired
     MessageSource messageSource;
 
     @Autowired
@@ -60,7 +59,7 @@ public class UserController {
     private SecurityService securityService;
 
     @Autowired
-    private UserValidationService userValidator;
+    private ValidationService userValidator;
 
     @Autowired
     private HttpServletRequest context;
@@ -70,9 +69,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @InitBinder("fileBucket")
+    @InitBinder("userForm")
     protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(fileValidator);
+        binder.setValidator(userValidator);
     }
 
     @RequestMapping(value = UrlMapping.LOGIN, method = RequestMethod.GET)
@@ -178,7 +177,7 @@ public class UserController {
     }
 
     @RequestMapping(value = {UrlMapping.ADD_DOCUMENT + "/{userId}"}, method = RequestMethod.POST)
-    public String uploadDocument(@Valid FileBucket fileBucket, BindingResult result, ModelMap model,
+    public String uploadDocument(@ModelAttribute FileBucket fileBucket, BindingResult result, ModelMap model,
                                  @PathVariable Long userId) throws IOException {
 
         return domainUtils.uploadDocument(fileBucket, result, model, userId);

@@ -8,8 +8,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+import java.util.Collections;
+
 @Service
-public class UserValidationService implements Validator {
+public class ValidationService implements Validator {
 
     private static final String NOT_EMPTY = "NotEmpty";
 
@@ -28,7 +30,7 @@ public class UserValidationService implements Validator {
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return User.class.equals(aClass);
+        return User.class.isAssignableFrom(aClass);
     }
 
     @Override

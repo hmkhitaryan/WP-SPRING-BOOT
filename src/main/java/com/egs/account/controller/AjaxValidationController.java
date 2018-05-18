@@ -2,7 +2,7 @@ package com.egs.account.controller;
 
 import com.egs.account.ajax.JsonResponse;
 import com.egs.account.mapping.UrlMapping;
-import com.egs.account.service.validator.UserValidationService;
+import com.egs.account.service.validator.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +27,7 @@ public class AjaxValidationController {
 	private static final String SUCCESS = "SUCCESS";
 
 	@Autowired
-	private UserValidationService userValidator;
+	private ValidationService userValidator;
 
 	@RequestMapping(value = UrlMapping.CHECK_EQUALITY, method = RequestMethod.POST)
 	public @ResponseBody

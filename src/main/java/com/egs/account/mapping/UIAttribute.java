@@ -22,4 +22,6 @@ public class UIAttribute {
 	public static final String SUCCESS = "success";
 
 	public static final String NOT_FOUND = "notFound";
+
+	public static final String DOC_OUT_OF_BOUND = "docOutOfBount";
 }

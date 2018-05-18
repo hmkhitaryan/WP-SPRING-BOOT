@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <title>Upload/Download/Delete Documents</title>
+    <link rel="stylesheet" th:href="@{/bootstrap.min.css/}"/>
+    <link rel="stylesheet" th:href="@{/app.css/}"/>
+</head>
+</head>
+
+<body>
+<div class="pull-right" style="padding-right:50px">
+    <a href="?language=en">English</a>|<a href="?language=fr">French</a>
+</div>
+<div class="generic-container">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading"><span class="lead" th:text="#{document.list.text}"></span></div>
+        <div class="tablecontainer">
+            <table class="table table-hover">
+                <div th:if="${documents.size() != 0}">
+                    <thead>
+                        <tr>
+                            <th th:text="#{document.number.label}"></th>
+                            <th th:text="#{document.link.label}"></th>
+                            <th th:text="#{document.type.label}"></th>
+                            <th th:text="#{document.insertDate.label}"></th>
+                            <th th:text="#{document.comment.label}"></th>
+                            <th width="100"></th>
+                            <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <div>
+                        <tbody>
+                            <div th:each="doc,iter : ${documents}">
+                                <tr>
+                                    <td th:text="${iter.count + 1}"></td>
+                                    <td th:text="${doc.link}"></td>
+                                    <td th:text="${doc.type}"></td>
+                                    <td th:text="${doc.insertDate}"></td>
+                                    <td th:text="${doc.comment}"></td>
+                                    <td><a th:href="'/download/document/' + ${user.id}/${doc.id}'"
+                                           class="btn btn-success custom-width" th:text="#{button.download.label}"></a></td>
+                                    <td><a th:href="'/delete/document/'+ ${user.id}/${doc.id}'" th:text="#{button.delete.label}"
+                                           class="btn btn-danger custom-width"></a></td>
+                                </tr>
+                            </div>
+                        </tbody>
+                    </div>
+                </div>
+            </table>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading"><span class="lead" th:text="#{document.new.upload.text}"></span></div>
+        <div class="uploadcontainer">
+            <form method="POST" th:object="${fileBucket}" enctype="multipart/form-data" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label class="col-md-3 control-lable" for="file" th:text="#{document.upload.text}"></label>
+                        <div class="col-md-7">
+                            <input th:field="*{file}" type="file"  id="file" class="form-control input-sm"/>
+                            <div class="has-error" th:errors="*{file}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label class="col-md-3 control-lable" for="comment" th:text="#{account.description.label}"></label>
+                        <div class="col-md-7">
+                            <input type="text" th:field="*{comment}" id="comment" class="form-control input-sm"
+                                   autofocus="autofocus"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-actions floatRight">
+                        <button class="btn btn-primary btn-sm" type="submit" th:text="#{button.upload.label}"></button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <div class="well">
+        <a th:href="@{'/edit/user/' + ${user.id}}" th:text="#{document.finnish.upload.text}"></a>
+    </div>
+</div>
+</body>
+</html>
