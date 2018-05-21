@@ -8,8 +8,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.util.Collections;
-
 @Service
 public class ValidationService implements Validator {
 
@@ -36,17 +34,21 @@ public class ValidationService implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         final User user = (User) o;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, USERNAME, NOT_EMPTY);
+        if (!user.isUpdated()) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, USERNAME, NOT_EMPTY);
+            final String userName = user.getUsername();
 
-        if (user.getUsername().length() < 6 || user.getUsername().length() > 32) {
-            errors.rejectValue(USERNAME, "Size.userForm.username");
-        }
-        if (userService.findByUsername(user.getUsername()) != null) {
-            errors.rejectValue(USERNAME, "Duplicate.userForm.username");
-        }
+            if (isFieldLengthInvalid(userName, 4, 32)) {
+                errors.rejectValue(USERNAME, "Size.userForm.username");
+            }
 
-        if (!user.getPasswordConfirm().equals(user.getPassword())) {
-            errors.rejectValue(PASSWORD_CONFIRM, "Diff.userForm.passwordConfirm");
+            final User alreadyExist = userService.findByUsername(userName);
+            if (alreadyExist != null) {
+                errors.rejectValue(USERNAME, "Duplicate.userForm.username");
+            }
+            if (!user.getPasswordConfirm().equals(user.getPassword())) {
+                errors.rejectValue(PASSWORD_CONFIRM, "Diff.userForm.passwordConfirm");
+            }
         }
 
         validatePassword(errors, user.getPassword());
@@ -62,24 +64,12 @@ public class ValidationService implements Validator {
 
     private void validatePassword(Errors errors, String password) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, "NotEmpty");
-        if (isInvalidPassword(password)) {
+        if (isFieldLengthInvalid(password, 8, 32)) {
             errors.rejectValue(PASSWORD, "Size.userForm.password");
         }
     }
 
-    public boolean isInvalidPassword(String password) {
-        return password.length() < 8 || password.length() > 32;
-    }
-
-    public void validateEdit(Object o, Errors errors) {
-        final User user = (User) o;
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, "NotEmpty");
-        if (user.getPassword().length() < 8 || user.getPassword().length() > 32) {
-            errors.rejectValue(PASSWORD, "Size.userForm.password");
-        }
-
-        if (!user.getEmail().contains(AT) || !user.getEmail().contains(".")) {
-            errors.rejectValue(EMAIL, "invalid.email");
-        }
+    public boolean isFieldLengthInvalid(String field, int lowerBound, int upperBound) {
+        return field.length() < lowerBound || field.length() > upperBound;
     }
 }

@@ -27,6 +27,7 @@ import java.util.List;
 public class DomainUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainUtils.class);
+    private static final int maxUploadFileSize = 1000000;
 
     private static final String SLASH_SIGN = "/";
 
@@ -42,7 +43,7 @@ public class DomainUtils {
         if(multipartFile == null){
             return;
         }
-        if(multipartFile.getSize() > 100000) {
+        if(multipartFile.getSize() > maxUploadFileSize) {
             throw new DocumentOutOfBoundException("document size is out of its bound");
         }
         document.setLink(multipartFile.getOriginalFilename());

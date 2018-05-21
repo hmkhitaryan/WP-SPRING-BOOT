@@ -15,7 +15,7 @@
 </div>
 
 <div class="container">
-    <form id="logoutForm" method="POST" th:action="logout">
+    <form id="logoutForm" method="POST" th:action="@{'/logout'}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
 
@@ -23,30 +23,25 @@
 
         <h2 class="form-signin-heading" th:text="#{account.edit.label}"></h2>
 
-        <div class="form-group">
-            <input type="text" th:field="*{firstName}" class="form-control" placeholder="First name"
-                   autofocus="autofocus"/>
+        <div class="form-group" th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
+            <input type="text" th:field="*{firstName}" class="form-control" placeholder="First name" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{lastName}" class="form-control" placeholder="Last name"
-                   autofocus="autofocus"/>
+        <div class="form-group" th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
+            <input type="text" th:field="*{lastName}" class="form-control" placeholder="Last name" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{email}" class="form-control" placeholder="Email"
-                   autofocus="autofocus"/>
+        <div class="form-group" th:classappend="${#fields.hasErrors('email')}? 'has-error'">
+            <input type="text" th:field="*{email}" class="form-control" placeholder="Email" autofocus="autofocus"/>
+            <div id="ajaxGetEmailResponse" class="form-group has-error"></div>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{skypeID}" class="form-control" placeholder="Skype ID"
-                   autofocus="autofocus"/>
+        <div class="form-group"  th:classappend="${#fields.hasErrors('skypeID')}? 'has-error'">
+            <input type="text" th:field="*{skypeID}" class="form-control" placeholder="Skype ID" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="password" th:field="*{password}" class="form-control"
-                   placeholder="New password (between 8 and 32 symbol)"
-                   autofocus="autofocus"/>
+        <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-error'">
+            <input type="password" th:field="*{password}" class="form-control" placeholder="New password (between 8 and 32 symbol)" autofocus="autofocus"/>
         </div>
 
         <span class="well pull-left">

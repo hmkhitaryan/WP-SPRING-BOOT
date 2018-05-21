@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class User {
     private String email;
     private Date dateRegistered;
     private String skypeID;
+    private transient boolean isUpdated;
 
     @ManyToMany( fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -115,6 +117,14 @@ public class User {
 
     public void setCatalogs(Set<Catalog> catalogs) {
         this.catalogs = catalogs;
+    }
+
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
     }
 
     @Override

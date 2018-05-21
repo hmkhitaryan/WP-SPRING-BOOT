@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="comment" content="">
+    <meta name="author" content="">
+
     <title>Create an account</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap.min.css/}"/>
@@ -25,50 +31,35 @@
 
         <h2 class="form-signin-heading" th:text="#{account.create.label}"></h2>
 
-        <div class="form-group">
-            <input type="text" th:field="*{username}" class="form-control" placeholder="Username"
-                   autofocus="autofocus"/>
-            <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="field-error"></td>
+        <div class="form-group" th:classappend="${#fields.hasErrors('username')} ? 'has-error'">
+            <input type="text" th:field="*{username}" class="form-control" placeholder="Username" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{firstName}" class="form-control" placeholder="First name"
-                   autofocus="autofocus"/>
-            <td th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="field-error"></td>
+        <div class="form-group" th:classappend="${#fields.hasErrors('firstName')} ? 'has-error'">
+            <input type="text" th:field="*{firstName}" class="form-control" placeholder="First name" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{lastName}" class="form-control" placeholder="Last name"
-                   autofocus="autofocus"/>
-            <td th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="field-error"></td>
+        <div class="form-group" th:classappend="${#fields.hasErrors('lastName')} ? 'has-error'">
+            <input type="text" th:field="*{lastName}" class="form-control" placeholder="Last name" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{email}" class="form-control" placeholder="Email"
-                   autofocus="autofocus"/>
-            <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error"></td>
+        <div class="form-group" th:classappend="${#fields.hasErrors('email')}? 'has-error'">
+            <input type="text" th:field="*{email}" class="form-control" placeholder="Email" autofocus="autofocus"/>
             <div id="ajaxGetEmailResponse" class="form-group has-error"></div>
         </div>
 
-        <div class="form-group">
-            <input type="text" th:field="*{skypeID}" class="form-control" placeholder="Skype ID"
-                   autofocus="autofocus"/>
-            <td th:if="${#fields.hasErrors('skypeID')}" th:errors="*{skypeID}" class="field-error"></td>
+        <div class="form-group"  th:classappend="${#fields.hasErrors('skypeID')}? 'has-error'">
+            <input type="text" th:field="*{skypeID}" class="form-control" placeholder="Skype ID" autofocus="autofocus"/>
         </div>
 
-        <div class="form-group">
-            <input type="password" th:field="*{password}" class="form-control"
-                   placeholder="Password (between 8 and 32 symbol)"
-                   autofocus="autofocus"/>
-            <div id="ajaxGetPasswordResponse" class="form-group has-error"></div>
+        <div class="form-group" th:classappend="${#fields.hasErrors('password')}? 'has-error'">
+            <input type="password" th:field="*{password}" class="form-control" placeholder="Password (between 8 and 32 symbol)" autofocus="autofocus"/>
             <td th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="field-error"></td>
         </div>
 
-        <div class="form-group">
-            <input type="password" th:field="*{passwordConfirm}" class="form-control" placeholder="Confirm password"
-                    autofocus="autofocus"/>
+        <div class="form-group"  th:classappend="${#fields.hasErrors('passwordConfirm')}? 'has-error'">
+            <input type="password" th:field="*{passwordConfirm}" class="form-control" placeholder="Confirm password" autofocus="autofocus"/>
             <div id="ajaxGetPasswordConfirmResponse" class="form-group has-error"></div>
-            <td th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="field-error"></td>
         </div>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit" th:text="#{button.submit.label}"></button>

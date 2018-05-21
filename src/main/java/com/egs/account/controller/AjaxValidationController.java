@@ -39,7 +39,7 @@ public class AjaxValidationController {
 	@RequestMapping(value = UrlMapping.CHECK_LENGTH, method = RequestMethod.POST)
 	public @ResponseBody
     JsonResponse resolveLength(@RequestParam(PASSWORD) String password) {
-		return processValidate(userValidator.isInvalidPassword(password));
+		return processValidate(userValidator.isFieldLengthInvalid(password, 8, 32));
 	}
 
 	@RequestMapping(value = UrlMapping.CHECK_EMAIL, method = RequestMethod.POST)
