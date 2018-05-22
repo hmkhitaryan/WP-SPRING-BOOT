@@ -1,70 +1,102 @@
-$(document).ready(function() {
-	$('#passwordConfirm').blur(function() {
-		$.ajax({
-		    type: "POST",
-			url : 'checkEquality',
-			data : {
-				password : $('#password').val(),
-				passwordConfirm : $('#passwordConfirm').val(),
-			},
-			success : function(response) {
-                if(response.status != "SUCCESS"){
-                   $('#ajaxGetPasswordConfirmResponse').html("Password and passwordConfirm do not match");
-                   $('#ajaxGetPasswordConfirmResponse').show('slow');
-                } else {
-                   $('#ajaxGetPasswordConfirmResponse').html("");
-                }
-            },
-			error: function(responseText){
-			     $('#ajaxGetPasswordConfirmResponse').text(responseText);
-            }
-		});
-	});
-
-	$('#password').blur(function() {
-    	$.ajax({
-    	    type: "POST",
-   			url : 'checkLength',
-   			data : {
-   				password : $('#password').val(),
-   			},
-
-   			success : function(response) {
-                if(response.status != "SUCCESS"){
-                    $('#ajaxGetPasswordResponse').html("Please use password between 6 and 32 characters.");
-                    $('#ajaxGetPasswordResponse').show('slow');
-                } else {
-                    $('#ajaxGetPasswordResponse').html("");
-                }
-            },
-
-    		error: function(responseText){
-    			 $('#ajaxGetPasswordResponse').text(responseText);
-            }
-    	});
+$(document).ready(function () {
+    $('#username').blur(function () {
+        initUsernameCheck('ajaxGetUsernameResponse', 'Invalid Username');
     });
 
-    $('#email').blur(function() {
-        	$.ajax({
-        	    type: "POST",
-       			url : 'checkEmail',
-       			data : {
-       				email : $('#email').val(),
-       			},
+    $('#email').blur(function () {
+        initEmailCheck('ajaxGetEmailResponse', 'Invalid Email');
+    });
 
-       			success : function(response) {
-                    if(response.status != "SUCCESS"){
-                        $('#ajaxGetEmailResponse').html("invalid email");
-                        $('#ajaxGetEmailResponse').show('slow');
-                    } else {
-                        $('#ajaxGetEmailResponse').html("");
-                    }
-                },
+    $('#password').blur(function () {
+        initPasswordCheck('ajaxGetPasswordResponse', 'Invalid Password');
+    });
 
-        		error: function(responseText){
-        			 $('#ajaxGetEmailResponse').text(responseText);
-                }
-        	});
-        });
-
+    $('#passwordConfirm').blur(function () {
+        initPasswordConfirmCheck('ajaxGetPasswordConfirmResponse', 'Password and PasswordConfirm do not match');
+    });
 });
+
+function initEmailCheck(errorDiv, errorMessage) {
+    $.ajax({
+        type: "POST",
+        url: 'checkEmail',
+        data: {
+            email: $('#email').val()
+        },
+        success: function (response) {
+            if (response.status != "SUCCESS") {
+                $('#' + errorDiv).html(errorMessage);
+                $('#' + errorDiv).show('slow');
+            } else {
+                $('#' + errorDiv).html("");
+            }
+        },
+        error: function (responseText) {
+            $('#' + errorDiv).text(responseText);
+        }
+    });
+}
+
+function initUsernameCheck(errorDiv, errorMessage) {
+    $.ajax({
+        type: "POST",
+        url: 'checkUsername',
+        data: {
+            username: $('#username').val()
+        },
+        success: function (response) {
+            if (response.status != "SUCCESS") {
+                $('#' + errorDiv).html(errorMessage);
+                $('#' + errorDiv).show('slow');
+            } else {
+                $('#' + errorDiv).html("");
+            }
+        },
+        error: function (responseText) {
+            $('#' + errorDiv).text(responseText);
+        }
+    });
+}
+
+function initPasswordCheck(errorDiv, errorMessage) {
+    $.ajax({
+        type: "POST",
+        url: 'checkPassword',
+        data: {
+            password: $('#password').val()
+        },
+        success: function (response) {
+            if (response.status != "SUCCESS") {
+                $('#' + errorDiv).html(errorMessage);
+                $('#' + errorDiv).show('slow');
+            } else {
+                $('#' + errorDiv).html("");
+            }
+        },
+        error: function (responseText) {
+            $('#' + errorDiv).text(responseText);
+        }
+    });
+}
+
+function initPasswordConfirmCheck(errorDiv, errorMessage) {
+    $.ajax({
+        type: "POST",
+        url: 'checkPasswordConfirm',
+        data: {
+            password: $('#password').val(),
+            passwordConfirm: $('#passwordConfirm').val()
+        },
+        success: function (response) {
+            if (response.status != "SUCCESS") {
+                $('#' + errorDiv).html(errorMessage);
+                $('#' + errorDiv).show('slow');
+            } else {
+                $('#' + errorDiv).html("");
+            }
+        },
+        error: function (responseText) {
+            $('#' + errorDiv).text(responseText);
+        }
+    });
+}

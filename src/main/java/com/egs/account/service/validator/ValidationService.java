@@ -2,6 +2,7 @@ package com.egs.account.service.validator;
 
 import com.egs.account.model.User;
 import com.egs.account.service.user.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -36,13 +37,13 @@ public class ValidationService implements Validator {
         final User user = (User) o;
         if (!user.isUpdated()) {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, USERNAME, NOT_EMPTY);
-            final String userName = user.getUsername();
+            final String username = user.getUsername();
 
-            if (isFieldLengthInvalid(userName, 4, 32)) {
+            if (isFieldLengthInvalid(username, 4, 25)) {
                 errors.rejectValue(USERNAME, "Size.userForm.username");
             }
 
-            final User alreadyExist = userService.findByUsername(userName);
+            final User alreadyExist = userService.findByUsername(username);
             if (alreadyExist != null) {
                 errors.rejectValue(USERNAME, "Duplicate.userForm.username");
             }
@@ -59,7 +60,37 @@ public class ValidationService implements Validator {
     }
 
     public boolean isInvalidEmail(String email) {
+        if (checkEmpty(email)) {
+            return true;
+        }
         return !email.contains(AT) || !email.contains(".");
+    }
+
+    public boolean isInvalidUsername(String username) {
+        if (checkEmpty(username)) {
+            return true;
+        }
+        return isFieldLengthInvalid(username, 4, 25);
+    }
+
+    public boolean isInvalidPassword(String password) {
+        if (checkEmpty(password)) {
+            return true;
+        }
+        if (isFieldLengthInvalid(password, 8, 25)) {
+            return true;
+        }
+        final String regex = "(?=.*?\\d)(?=.*?[a-zA-Z])(?=.*?[^\\w]).{8,}";
+
+        return !password.matches(regex);
+    }
+
+    public boolean passwordsMatch(String password, String passwordConfirm) {
+        return StringUtils.equals(password, passwordConfirm);
+    }
+
+    public boolean checkEmpty(String field) {
+        return StringUtils.isEmpty(field);
     }
 
     private void validatePassword(Errors errors, String password) {
@@ -69,7 +100,7 @@ public class ValidationService implements Validator {
         }
     }
 
-    public boolean isFieldLengthInvalid(String field, int lowerBound, int upperBound) {
+    private boolean isFieldLengthInvalid(String field, int lowerBound, int upperBound) {
         return field.length() < lowerBound || field.length() > upperBound;
     }
 }

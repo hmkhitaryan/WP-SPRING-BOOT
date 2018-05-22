@@ -27,15 +27,17 @@ public class UrlMapping {
 
 	public static final String DELETE_DOCUMENT = "/delete/document";
 
-	public static final String ENGLISH_LANG = "?language=en";
-
-	public static final String FRENCH_LANG = "?language=fr";
-
-	public static final String CHECK_EQUALITY = "checkEquality";
-
-	public static final String CHECK_LENGTH = "checkLength";
+    public static final String CHECK_USERNAME = "checkUsername";
 
 	public static final String CHECK_EMAIL = "checkEmail";
+
+    public static final String CHECK_EMAIL_EDIT = "edit/user/checkEmail";
+
+    public static final String CHECK_PASSWORD = "checkPassword";
+
+    public static final String CHECK_PASSWORD_EDIT = "edit/user/checkPassword";
+
+    public static final String CHECK_PASSWORD_CONFIRM = "checkPasswordConfirm";
 
 	// views
 	public static final String LOGIN_VIEW = "login";
