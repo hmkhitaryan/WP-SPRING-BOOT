@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Set;
 

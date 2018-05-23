@@ -24,6 +24,8 @@ public class ValidationService implements Validator {
 
     private static final String PASSWORD = "password";
 
+    private static final String REGEX_PASSWORD = "(?=.*?\\d)(?=.*?[a-zA-Z])(?=.*?[^\\w]).{8,}";
+
     @Autowired
     private UserService userService;
 
@@ -48,7 +50,7 @@ public class ValidationService implements Validator {
                 errors.rejectValue(USERNAME, "Duplicate.userForm.username");
             }
             if (!user.getPasswordConfirm().equals(user.getPassword())) {
-                errors.rejectValue(PASSWORD_CONFIRM, "Diff.userForm.passwordConfirm");
+                errors.rejectValue(PASSWORD_CONFIRM, "Diff.passwordConfirm");
             }
         }
 
@@ -80,23 +82,22 @@ public class ValidationService implements Validator {
         if (isFieldLengthInvalid(password, 8, 25)) {
             return true;
         }
-        final String regex = "(?=.*?\\d)(?=.*?[a-zA-Z])(?=.*?[^\\w]).{8,}";
 
-        return !password.matches(regex);
+        return !password.matches(REGEX_PASSWORD);
     }
 
     public boolean passwordsMatch(String password, String passwordConfirm) {
         return StringUtils.equals(password, passwordConfirm);
     }
 
-    public boolean checkEmpty(String field) {
+    private boolean checkEmpty(String field) {
         return StringUtils.isEmpty(field);
     }
 
     private void validatePassword(Errors errors, String password) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, PASSWORD, "NotEmpty");
-        if (isFieldLengthInvalid(password, 8, 32)) {
-            errors.rejectValue(PASSWORD, "Size.userForm.password");
+        if (isInvalidPassword(password)) {
+            errors.rejectValue(PASSWORD, "Size.password");
         }
     }
 

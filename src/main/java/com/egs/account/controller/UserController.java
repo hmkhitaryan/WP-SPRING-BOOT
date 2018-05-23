@@ -15,7 +15,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,9 +32,11 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
-    private static final String SLASH_SIGN = "/";
-
     private static final String MAP = "map";
+
+    private static final String USER = "user";
+
+    private static final String UPDATED_SUCCESSFULLY = " updated successfully";
 
     @Autowired
     MessageSource messageSource;
@@ -113,25 +118,24 @@ public class UserController {
 
             return UrlMapping.LOGIN_VIEW;
         }
-
-        model.addAttribute(UIAttribute.USER_FORM, user);
+        model.addAttribute(USER, user);
 
         return UrlMapping.EDIT_USER_VIEW;
     }
 
     @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.POST)
-    public String processUpdateUserPage(@ModelAttribute User userForm, BindingResult bindingResult, ModelMap model,
-                             @PathVariable Long id) {
-        userForm.setUpdated(true);
-        userValidator.validate(userForm, bindingResult);
+    public String processUpdateUserPage(@ModelAttribute User user, BindingResult bindingResult, ModelMap model,
+                                        @PathVariable Long id) {
+        user.setUpdated(true);
+        userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return UrlMapping.EDIT_USER_REDIRECT_VIEW + SLASH_SIGN + id;
+            return UrlMapping.EDIT_USER_VIEW;
         }
-        userService.updateUser(userForm);
-        model.addAttribute(UIAttribute.USER_FORM, userForm);
-        model.addAttribute(UIAttribute.SUCCESS, "User " + userForm.getFirstName() + " " + userForm.getLastName() +
-                " updated successfully");
+        userService.updateUser(user);
+        model.addAttribute(UIAttribute.USER_FORM, user);
+        model.addAttribute(UIAttribute.SUCCESS, "User " + user.getFirstName() + " " + user.getLastName() +
+                UPDATED_SUCCESSFULLY);
 
         return UrlMapping.REGISTRATION_SUCCESS_VIEW;
     }
