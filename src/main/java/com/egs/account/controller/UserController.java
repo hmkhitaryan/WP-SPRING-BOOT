@@ -2,7 +2,9 @@ package com.egs.account.controller;
 
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
+import com.egs.account.model.Catalog;
 import com.egs.account.model.User;
+import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
 import com.egs.account.service.validator.ValidationService;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author Hayk_Mkhitaryan
@@ -37,6 +40,10 @@ public class UserController {
     private static final String USER = "user";
 
     private static final String UPDATED_SUCCESSFULLY = " updated successfully";
+
+    private static final String DOC_SIZE = "docSize";
+
+    private static final String BUCKET_LINKS = "bucketLinks";
 
     @Autowired
     MessageSource messageSource;
@@ -54,6 +61,9 @@ public class UserController {
 
     @Autowired
     private HttpServletRequest context;
+
+    @Autowired
+    private CatalogService catalogService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -85,6 +95,9 @@ public class UserController {
         final String userName = context.getUserPrincipal().getName();
         final User userForm = userService.findByUsername(userName);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
+        final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
+        model.addAttribute(DOC_SIZE, catalogs.size());
+        model.addAttribute(BUCKET_LINKS, domainUtils.getLinks(catalogs));
 
         return UrlMapping.WELCOME_VIEW;
     }

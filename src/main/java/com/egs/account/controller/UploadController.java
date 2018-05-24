@@ -68,8 +68,7 @@ public class UploadController {
 
 
     @RequestMapping(value = {UrlMapping.DOWNLOAD_DOCUMENT + "/{userId}/{docId}"}, method = RequestMethod.GET)
-    public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response)
-            throws IOException {
+    public String downloadDocument(@PathVariable Long userId, @PathVariable Long docId, HttpServletResponse response) {
         domainUtils.downloadDocument(response, docId);
 
         return UrlMapping.ADD_DOC_REDIRECT_VIEW + SLASH_SIGN + userId;

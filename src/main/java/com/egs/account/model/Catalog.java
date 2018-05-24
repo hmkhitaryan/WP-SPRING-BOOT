@@ -20,11 +20,6 @@ public class Catalog {
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name="content", nullable = false)
-    private byte[] content;
-
     public Long getId() {
         return id;
     }
@@ -56,10 +51,6 @@ public class Catalog {
     public User getUser() { return user;}
 
     public void setUser(User user) { this.user = user; }
-
-    public byte[] getContent() { return content; }
-
-    public void setContent(byte[] content) { this.content = content; }
 
     @Override
     public int hashCode() {

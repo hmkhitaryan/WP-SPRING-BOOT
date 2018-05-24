@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -49,6 +50,14 @@ public class GeneralConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String externalFilePath = "file:///C:/Users/haykmk/hmkhitaryan/dev/proj/temp/";  //C:\Users\haykmk\hmkhitaryan\dev\proj\temp
+        registry.addResourceHandler("/temp/**").addResourceLocations(externalFilePath);
+
+        super.addResourceHandlers(registry);
     }
 }
 

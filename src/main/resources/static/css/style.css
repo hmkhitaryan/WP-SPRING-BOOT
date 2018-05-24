@@ -12,3 +12,9 @@ body {
 label {
     font-weight: bold;
 }
+
+.logout {
+    display: inline;
+    float: right;
+    margin-right: 10px;
+}

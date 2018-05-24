@@ -20,16 +20,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class DomainUtils {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainUtils.class);
+
     private static final int maxUploadFileSize = 1000000;
 
     private static final String SLASH_SIGN = "/";
+
+    private static final String DOT_SIGH = ".";
+
+    private static final String TEMP = "temp/";
 
     @Autowired
     private CatalogService catalogService;
@@ -37,40 +47,95 @@ public class DomainUtils {
     @Autowired
     private UserService userService;
 
-    private void saveDocument(FileBucket fileBucket, User user) throws IOException {
-        final Catalog document = new Catalog();
+    private void saveDocument(FileBucket fileBucket, User user) {
         final MultipartFile multipartFile = fileBucket.getFile();
-        if(multipartFile == null){
-            return;
+        final String originalFileName = multipartFile.getOriginalFilename();
+        final String fileName = user.getId() + DOT_SIGH + originalFileName;
+        validateFile(multipartFile);
+
+        try {
+            final byte[] bytes = multipartFile.getBytes();
+            final Path path = Paths.get(TEMP + fileName);
+            Files.write(path, bytes);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        if(multipartFile.getSize() > maxUploadFileSize) {
-            throw new DocumentOutOfBoundException("document size is out of its bound");
-        }
-        document.setLink(multipartFile.getOriginalFilename());
+
+        final Catalog document = getCatalog(fileBucket, user, multipartFile, fileName);
+        catalogService.saveDocument(document);
+    }
+
+    private Catalog getCatalog(FileBucket fileBucket, User user, MultipartFile multipartFile, String fileName) {
+        final Catalog document = new Catalog();
+        document.setLink(TEMP + fileName);
         document.setComment(fileBucket.getComment());
-        document.setContent(multipartFile.getBytes());
         document.setType(multipartFile.getContentType());
         document.setInsertDate(new Date());
         document.setUser(user);
 
-        catalogService.saveDocument(document);
+        return document;
     }
 
-    public void downloadDocument(HttpServletResponse response, Long docId) throws IOException {
+    private void validateFile(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            throw new RuntimeException("Please load a file");
+        }
+        if (multipartFile.getSize() > maxUploadFileSize) {
+            throw new DocumentOutOfBoundException("document size is out of its bound");
+        }
+    }
+
+    private byte[] getUserFileByDocId(Long docId) {
+        final String fileName = catalogService.findById(docId).getLink();
+        byte[] fileBytes = null;
+        try {
+            final File file = new File(fileName);
+            fileBytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            LOGGER.error("something went wrong with getting file");
+        }
+
+        return fileBytes;
+    }
+
+    public List<String> getLinks(List<Catalog> catalogs) {
+        final List<String> links = new ArrayList<>();
+        for (Catalog catalog : catalogs) {
+            links.add(catalog.getLink());
+        }
+
+        return links;
+    }
+
+    public void downloadDocument(HttpServletResponse response, Long docId) {
+        final byte[] fileContent = getUserFileByDocId(docId);
+        if (fileContent == null) {
+            return;
+        }
         final Catalog document = catalogService.findById(docId);
         handleNotFoundError(document, Catalog.class, docId);
-        response.setContentType(document.getType());
-        response.setContentLength(document.getContent().length);
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + document.getLink() + "\"");
+        processDownload(response, fileContent, document);
+    }
 
-        FileCopyUtils.copy(document.getContent(), response.getOutputStream());
+    private void processDownload(HttpServletResponse response, byte[] fileContent, Catalog document) {
+        response.setContentType(document.getType());
+        response.setContentLength(fileContent.length);
+        final String value = "attachment; filename=\"" + document.getLink() + "\"";
+        response.setHeader("Content-Disposition", value);
+
+        try {
+            FileCopyUtils.copy(fileContent, response.getOutputStream());
+        } catch (IOException e) {
+            LOGGER.error("something went wrong with downloading file");
+        }
     }
 
     public boolean isLoggedInUser(HttpServletRequest context, User user) {
         return user.getUsername() != null && user.getUsername().equals(context.getUserPrincipal().getName());
     }
 
-    public String uploadDocument(FileBucket fileBucket, BindingResult result, ModelMap model, Long userId) throws IOException {
+    public String uploadDocument(FileBucket fileBucket, BindingResult result, ModelMap model, Long userId) {
         final User user = userService.findById(userId);
         handleNotFoundError(user, User.class, userId);
         if (result.hasErrors()) {

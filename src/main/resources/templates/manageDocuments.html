@@ -3,8 +3,8 @@
 
 <head>
     <title>Upload/Download/Delete Documents</title>
-    <link rel="stylesheet" th:href="@{/bootstrap.min.css/}"/>
-    <link rel="stylesheet" th:href="@{/app.css/}"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css/}"/>
+    <link rel="stylesheet" th:href="@{/css/app.css/}"/>
 </head>
 </head>
 
@@ -75,7 +75,7 @@
 
                 <div class="row">
                     <div class="form-actions floatRight">
-                        <button class="btn btn-primary btn-sm" type="submit" th:text="#{button.upload.label}"></button>
+                        <button class="btn btn-primary btn-sm" type="submit" th:text="#{button.upload.label}" id="uploadDoc"></button>
                     </div>
                 </div>
 
@@ -83,7 +83,7 @@
         </div>
     </div>
     <div class="well">
-        <a th:href="@{'/edit/user/' + ${user.id}}" th:text="#{document.finnish.upload.text}"></a>
+        <a th:href="@{'/welcome'}" th:text="#{document.finnish.upload.text}"></a>
     </div>
 </div>
 </body>
