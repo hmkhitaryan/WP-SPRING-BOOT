@@ -96,8 +96,9 @@ public class UserController {
         final User userForm = userService.findByUsername(userName);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
         final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
-        model.addAttribute(DOC_SIZE, catalogs.size());
-        model.addAttribute(BUCKET_LINKS, domainUtils.getLinks(catalogs));
+        final List<String> links = domainUtils.getImageLinks(catalogs);
+        model.addAttribute(BUCKET_LINKS, links);
+        model.addAttribute(DOC_SIZE, links.size());
 
         return UrlMapping.WELCOME_VIEW;
     }

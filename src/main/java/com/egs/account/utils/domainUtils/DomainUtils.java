@@ -41,6 +41,10 @@ public class DomainUtils {
 
     private static final String TEMP = "temp/";
 
+    private static final String FILE_FULL_PATH = "C:\\Users\\haykmk\\hmkhitaryan\\dev\\proj\\temp\\";
+
+    private static final String JPEG_TYPE = "image/jpeg";
+
     @Autowired
     private CatalogService catalogService;
 
@@ -55,7 +59,7 @@ public class DomainUtils {
 
         try {
             final byte[] bytes = multipartFile.getBytes();
-            final Path path = Paths.get(TEMP + fileName);
+            final Path path = Paths.get(FILE_FULL_PATH + fileName);
             Files.write(path, bytes);
 
         } catch (IOException e) {
@@ -69,6 +73,7 @@ public class DomainUtils {
     private Catalog getCatalog(FileBucket fileBucket, User user, MultipartFile multipartFile, String fileName) {
         final Catalog document = new Catalog();
         document.setLink(TEMP + fileName);
+        document.setFullFileName(FILE_FULL_PATH + fileName);
         document.setComment(fileBucket.getComment());
         document.setType(multipartFile.getContentType());
         document.setInsertDate(new Date());
@@ -87,10 +92,10 @@ public class DomainUtils {
     }
 
     private byte[] getUserFileByDocId(Long docId) {
-        final String fileName = catalogService.findById(docId).getLink();
+        final String fullFileName = catalogService.findById(docId).getFullFileName();
         byte[] fileBytes = null;
         try {
-            final File file = new File(fileName);
+            final File file = new File(fullFileName);
             fileBytes = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
             LOGGER.error("something went wrong with getting file");
@@ -99,10 +104,12 @@ public class DomainUtils {
         return fileBytes;
     }
 
-    public List<String> getLinks(List<Catalog> catalogs) {
+    public List<String> getImageLinks(List<Catalog> catalogs) {
         final List<String> links = new ArrayList<>();
         for (Catalog catalog : catalogs) {
-            links.add(catalog.getLink());
+            if (catalog.getType().equalsIgnoreCase(JPEG_TYPE)) {
+                links.add(catalog.getLink());
+            }
         }
 
         return links;
@@ -132,6 +139,9 @@ public class DomainUtils {
     }
 
     public boolean isLoggedInUser(HttpServletRequest context, User user) {
+        if (context.getUserPrincipal() == null) {
+            return false;
+        }
         return user.getUsername() != null && user.getUsername().equals(context.getUserPrincipal().getName());
     }
 

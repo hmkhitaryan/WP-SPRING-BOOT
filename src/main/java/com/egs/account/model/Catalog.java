@@ -12,6 +12,7 @@ public class Catalog {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String link;
+    private String fullFileName;
     private String comment;
     private String type;
     private Date insertDate;
@@ -31,6 +32,14 @@ public class Catalog {
     public String getLink() { return link; }
 
     public void setLink(String link) { this.link = link; }
+
+    public String getFullFileName() {
+        return fullFileName;
+    }
+
+    public void setFullFileName(String fullFileName) {
+        this.fullFileName = fullFileName;
+    }
 
     public String getComment() { return comment; }
 
