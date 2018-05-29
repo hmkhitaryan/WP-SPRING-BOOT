@@ -13,35 +13,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityServiceImpl implements SecurityService {
 
-	private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecurityServiceImpl.class);
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Override
-	public String findLoggedInUsername() {
-		final Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
-		if (userDetails instanceof UserDetails) {
-			return ((UserDetails) userDetails).getUsername();
-		}
+    @Override
+    public String findLoggedInUsername() {
+        final Object userDetails = SecurityContextHolder.getContext().getAuthentication().getDetails();
+        if (userDetails instanceof UserDetails) {
+            return ((UserDetails) userDetails).getUsername();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public void autoLogin(String username, String password) {
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		if (userDetails != null) {
-			final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-					new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
-			authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-			if (usernamePasswordAuthenticationToken.isAuthenticated()) {
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				logger.debug(String.format("Auto login %s successfully!", username));
-			}
-		}
-	}
+    @Override
+    public void autoLogin(String username, String password) {
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (userDetails != null) {
+            final UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+            try {
+                authenticationManager.authenticate(authToken);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            if (authToken.isAuthenticated()) {
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.debug(String.format("Auto login %s successfully!", username));
+            }
+        }
+    }
 }

@@ -15,6 +15,8 @@ public class UrlMapping {
 
 	public final static String REGISTRATION = "/registration";
 
+    public final static String REGISTRATION_CONFIRM = "/registrationConfirm";
+
 	public final static String TO_MAP = "/toMap";
 
 	public final static String EDIT_USER = "/edit/user";
@@ -50,6 +52,10 @@ public class UrlMapping {
 
 	public static final String ADD_DOC_REDIRECT_VIEW = "redirect:/add/document";
 
+    public static final String LOGIN_REDIRECT = "redirect:/login?language=";
+
+    public static final String BAD_USER_REDIRECT = "redirect:/badUser?language=";
+
 	public static final String WELCOME_VIEW = "welcomeUser";
 
 	public static final String EDIT_USER_VIEW = "editUser";
@@ -59,5 +65,7 @@ public class UrlMapping {
 	public static final String REGISTRATION_SUCCESS_VIEW = "registrationSuccess";
 
 	public static final String DELETE_SUCCESS_VIEW = "deleteSuccess";
+
+    public static final String EMAIL_ERROR_VIEW = "error/emailError";
 
 }

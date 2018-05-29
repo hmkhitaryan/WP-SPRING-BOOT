@@ -1,9 +1,11 @@
 package com.egs.account.controller;
 
+import com.egs.account.event.OnRegistrationCompleteEvent;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.User;
+import com.egs.account.model.verification.VerificationToken;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
@@ -12,19 +14,20 @@ import com.egs.account.utils.domainUtils.DomainUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Hayk_Mkhitaryan
@@ -45,6 +48,10 @@ public class UserController {
 
     private static final String BUCKET_LINKS = "bucketLinks";
 
+    private static final String HTTP = "http://";
+
+    private static final String COLON_SIGN = ":";
+
     @Autowired
     MessageSource messageSource;
 
@@ -64,6 +71,9 @@ public class UserController {
 
     @Autowired
     private CatalogService catalogService;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public UserController(UserService userService) {
@@ -111,17 +121,54 @@ public class UserController {
     }
 
     @RequestMapping(value = UrlMapping.REGISTRATION, method = RequestMethod.POST)
-    public String processRegistrationPage(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult) {
+    public String processRegistrationPage(@ModelAttribute(UIAttribute.USER_FORM) User userForm, BindingResult bindingResult,
+                                          final HttpServletRequest request, Model model) {
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return UrlMapping.REGISTRATION_VIEW;
         }
-        userService.saveUser(userForm);
-        securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
-        LOGGER.info("user with username {} successfully registered", userForm.getUsername());
+        User registered = userService.saveUser(userForm);
+        if (registered == null) {
+            return UrlMapping.REGISTRATION_VIEW;
+        }
 
-        return UrlMapping.WELCOME_REDIRECT_VIEW;
+        try {
+            eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered, request.getLocale(), getAppUrl(request)));
+        } catch (Exception ex) {
+            LOGGER.warn("Unable to register user", ex);
+
+            return UrlMapping.EMAIL_ERROR_VIEW;
+        }
+        model.addAttribute("user", userForm);
+
+        return "successRegister";
+    }
+
+    @RequestMapping(value = UrlMapping.REGISTRATION_CONFIRM, method = RequestMethod.GET)
+    public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
+        final Locale locale = request.getLocale();
+        final VerificationToken verificationToken = userService.getVerificationToken(token);
+        if (verificationToken == null) {
+            final String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
+            model.addAttribute("message", message);
+
+            return UrlMapping.BAD_USER_REDIRECT + locale.getLanguage();
+        }
+
+        User user = verificationToken.getUser();
+        Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            final String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
+            model.addAttribute("message", messageValue);
+
+            return UrlMapping.BAD_USER_REDIRECT + locale.getLanguage();
+        }
+
+        user.setEnabled(true);
+        userService.saveUser(user);
+
+        return UrlMapping.LOGIN_REDIRECT + request.getLocale().getLanguage();
     }
 
     @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
@@ -159,5 +206,9 @@ public class UserController {
         userService.deleteUserById(id);
 
         return UrlMapping.DELETE_SUCCESS_VIEW;
+    }
+
+    private String getAppUrl(HttpServletRequest request) {
+        return HTTP + request.getServerName() + COLON_SIGN + request.getServerPort() + request.getContextPath();
     }
 }

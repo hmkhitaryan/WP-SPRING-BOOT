@@ -1,6 +1,7 @@
 package com.egs.account.service.user;
 
 import com.egs.account.model.User;
+import com.egs.account.model.verification.VerificationToken;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface UserService {
 	 *
 	 * @param user to be saved
 	 */
-	void saveUser(User user);
+    User saveUser(User user);
 
 	/**
 	 * Update user.
@@ -54,4 +55,10 @@ public interface UserService {
 	 * @return users found
 	 */
 	List<User> findAllUsers();
+
+    void createVerificationTokenForUser(final User user, final String token);
+
+    VerificationToken getVerificationToken(final String VerificationToken);
+
+    String validateVerificationToken(String token);
 }

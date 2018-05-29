@@ -29,6 +29,9 @@ public class User {
     private String skypeID;
     private transient boolean isUpdated;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     @ManyToMany( fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonIgnore
@@ -37,6 +40,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Catalog> catalogs;
+
+    public User() {
+        super();
+        this.enabled = false;
+    }
 
     public Long getId() {
         return id;
@@ -124,6 +132,14 @@ public class User {
 
     public void setUpdated(boolean updated) {
         isUpdated = updated;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

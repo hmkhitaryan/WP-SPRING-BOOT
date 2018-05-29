@@ -1,8 +1,10 @@
 package com.egs.account.service.user;
 
 import com.egs.account.model.User;
+import com.egs.account.model.verification.VerificationToken;
 import com.egs.account.repository.role.RoleRepository;
 import com.egs.account.repository.user.UserRepository;
+import com.egs.account.repository.verificationToken.VerificationTokenRepository;
 import com.egs.account.utils.domainUtils.DomainUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +23,9 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    public static final String TOKEN_INVALID = "invalidToken";
+    public static final String TOKEN_EXPIRED = "expired";
+    public static final String TOKEN_VALID = "valid";
 
     @Autowired
     private UserRepository userRepository;
@@ -28,24 +34,27 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
 
     @Autowired
+    private VerificationTokenRepository tokenRepository;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private DomainUtils domainUtils;
 
     @Override
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setRoles(new HashSet<>(roleRepository.findAll()));
         user.setDateRegistered(new Date());
-        userRepository.save(user);
         LOGGER.info("user with username {} successfully saved", user.getUsername());
+        User savedUser = userRepository.save(user);
+        return savedUser;
     }
 
     @Override
     public User findByUsername(String username) {
         User user = userRepository.findByUsername(username);
-//        domainUtils.handleNotFoundError(user, User.class, username);
 
         return user;
     }
@@ -108,5 +117,36 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
         LOGGER.info("user with id {} successfully deleted", id);
+    }
+
+    @Override
+    public void createVerificationTokenForUser(final User user, final String token) {
+        final VerificationToken vToken = new VerificationToken(token, user);
+        tokenRepository.save(vToken);
+    }
+
+    @Override
+    public VerificationToken getVerificationToken(final String VerificationToken) {
+        return tokenRepository.findByToken(VerificationToken);
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        final VerificationToken verificationToken = tokenRepository.findByToken(token);
+        if (verificationToken == null) {
+            return TOKEN_INVALID;
+        }
+
+        final User user = verificationToken.getUser();
+        final Calendar cal = Calendar.getInstance();
+        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
+            tokenRepository.delete(verificationToken);
+            return TOKEN_EXPIRED;
+        }
+
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        return TOKEN_VALID;
     }
 }
