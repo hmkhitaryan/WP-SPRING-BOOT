@@ -15,7 +15,7 @@ public class UrlMapping {
 
 	public final static String REGISTRATION = "/registration";
 
-    public final static String REGISTRATION_CONFIRM = "/registrationConfirm";
+	public final static String REGISTRATION_CONFIRM = "/registrationConfirm.html";
 
 	public final static String TO_MAP = "/toMap";
 

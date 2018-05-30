@@ -5,7 +5,6 @@ import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.User;
-import com.egs.account.model.verification.VerificationToken;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
@@ -25,7 +24,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +49,12 @@ public class UserController {
     private static final String HTTP = "http://";
 
     private static final String COLON_SIGN = ":";
+
+    private static final String TOKEN_INVALID = "invalidToken";
+
+    private static final String TOKEN_EXPIRED = "expired";
+
+    private static final String TOKEN_VALID = "valid";
 
     @Autowired
     MessageSource messageSource;
@@ -148,27 +152,12 @@ public class UserController {
     @RequestMapping(value = UrlMapping.REGISTRATION_CONFIRM, method = RequestMethod.GET)
     public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
         final Locale locale = request.getLocale();
-        final VerificationToken verificationToken = userService.getVerificationToken(token);
-        if (verificationToken == null) {
-            final String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
-            model.addAttribute("message", message);
-
+        String validatedToken = userService.validateVerificationToken(token);
+        if (invalidToken(model, locale, validatedToken)) {
             return UrlMapping.BAD_USER_REDIRECT + locale.getLanguage();
         }
 
-        User user = verificationToken.getUser();
-        Calendar cal = Calendar.getInstance();
-        if ((verificationToken.getExpiryDate().getTime() - cal.getTime().getTime()) <= 0) {
-            final String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
-            model.addAttribute("message", messageValue);
-
-            return UrlMapping.BAD_USER_REDIRECT + locale.getLanguage();
-        }
-
-        user.setEnabled(true);
-        userService.saveUser(user);
-
-        return UrlMapping.LOGIN_REDIRECT + request.getLocale().getLanguage();
+        return UrlMapping.LOGIN_REDIRECT + locale.getLanguage();
     }
 
     @RequestMapping(value = {UrlMapping.EDIT_USER + "/{id}"}, method = RequestMethod.GET)
@@ -210,5 +199,22 @@ public class UserController {
 
     private String getAppUrl(HttpServletRequest request) {
         return HTTP + request.getServerName() + COLON_SIGN + request.getServerPort() + request.getContextPath();
+    }
+
+
+    private boolean invalidToken(Model model, Locale locale, String validatedToken) {
+        if (validatedToken.equalsIgnoreCase(TOKEN_INVALID)) {
+            final String message = messageSource.getMessage("auth.message.invalidToken", null, locale);
+            model.addAttribute("message", message);
+
+            return true;
+        }
+        if (validatedToken.equalsIgnoreCase(TOKEN_EXPIRED)) {
+            final String messageValue = messageSource.getMessage("auth.message.expired", null, locale);
+            model.addAttribute("message", messageValue);
+
+            return true;
+        }
+        return false;
     }
 }
