@@ -14,6 +14,8 @@ import java.util.UUID;
 
 @Component
 public class RegistrationListener implements ApplicationListener<OnRegistrationCompleteEvent> {
+    private static final String REGISTRATION_CONFIRM_HTML_TOKEN = "/registrationConfirm.html?token=";
+
     @Autowired
     private UserService service;
 
@@ -25,8 +27,6 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
     @Autowired
     private Environment env;
-
-    // API
 
     @Override
     public void onApplicationEvent(final OnRegistrationCompleteEvent event) {
@@ -42,12 +42,10 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         mailSender.send(email);
     }
 
-    //
-
     private SimpleMailMessage constructEmailMessage(final OnRegistrationCompleteEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
         final String subject = "Registration Confirmation";
-        final String confirmationUrl = event.getAppUrl() + "/registrationConfirm.html?token=" + token;
+        final String confirmationUrl = event.getAppUrl() + REGISTRATION_CONFIRM_HTML_TOKEN + token;
         final String message = messages.getMessage("message.regSucc", null, event.getLocale());
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);

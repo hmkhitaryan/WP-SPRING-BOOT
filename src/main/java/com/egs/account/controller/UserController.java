@@ -54,8 +54,6 @@ public class UserController {
 
     private static final String TOKEN_EXPIRED = "expired";
 
-    private static final String TOKEN_VALID = "valid";
-
     @Autowired
     MessageSource messageSource;
 
@@ -146,7 +144,7 @@ public class UserController {
         }
         model.addAttribute("user", userForm);
 
-        return "successRegister";
+        return UrlMapping.SUCCESS_REGISTER_VIEW;
     }
 
     @RequestMapping(value = UrlMapping.REGISTRATION_CONFIRM, method = RequestMethod.GET)

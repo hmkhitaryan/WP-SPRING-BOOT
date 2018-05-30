@@ -81,8 +81,6 @@ public class VerificationToken {
         this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
 
-    //
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -105,34 +103,12 @@ public class VerificationToken {
             return false;
         }
         final VerificationToken other = (VerificationToken) obj;
-        if (expiryDate == null) {
-            if (other.expiryDate != null) {
-                return false;
-            }
-        } else if (!expiryDate.equals(other.expiryDate)) {
-            return false;
-        }
-        if (token == null) {
-            if (other.token != null) {
-                return false;
-            }
-        } else if (!token.equals(other.token)) {
-            return false;
-        }
-        if (user == null) {
-            if (other.user != null) {
-                return false;
-            }
-        } else if (!user.equals(other.user)) {
-            return false;
-        }
-        return true;
+
+        return id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Token [String=").append(token).append("]").append("[Expires").append(expiryDate).append("]");
-        return builder.toString();
+        return "Token [String=" + token + "]" + "[Expires" + expiryDate + "]";
     }
 }

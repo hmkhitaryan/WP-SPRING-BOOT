@@ -17,6 +17,12 @@ import java.util.Locale;
 @Component("authenticationFailureHandler")
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
+    private static final String LOGIN_HTML_ERROR_TRUE = "/login.html?error=true";
+
+    private static final String USER_IS_DISABLED = "User is disabled";
+
+    private static final String USER_ACCOUNT_HAS_EXPIRED = "User account has expired";
+
     @Autowired
     private MessageSource messages;
 
@@ -26,17 +32,17 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
-        setDefaultFailureUrl("/login.html?error=true");
+        setDefaultFailureUrl(LOGIN_HTML_ERROR_TRUE);
 
         super.onAuthenticationFailure(request, response, exception);
 
-        Locale locale = localeResolver.resolveLocale(request);
+        final Locale locale = localeResolver.resolveLocale(request);
 
         String errorMessage = messages.getMessage("message.badCredentials", null, locale);
 
-        if (exception.getMessage().equalsIgnoreCase("User is disabled")) {
+        if (USER_IS_DISABLED.equalsIgnoreCase(exception.getMessage())) {
             errorMessage = messages.getMessage("auth.message.disabled", null, locale);
-        } else if (exception.getMessage().equalsIgnoreCase("User account has expired")) {
+        } else if (USER_ACCOUNT_HAS_EXPIRED.equalsIgnoreCase(exception.getMessage())) {
             errorMessage = messages.getMessage("auth.message.expired", null, locale);
         }
 

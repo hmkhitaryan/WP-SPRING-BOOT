@@ -1,7 +1,6 @@
 package com.egs.account.service.user;
 
 import com.egs.account.model.User;
-import com.egs.account.model.verification.VerificationToken;
 
 import java.util.List;
 
@@ -56,9 +55,18 @@ public interface UserService {
 	 */
 	List<User> findAllUsers();
 
-    void createVerificationTokenForUser(final User user, final String token);
+	/**
+	 * Create verification token for user.
+	 *
+	 * @param user  token to be created for
+	 * @param token token to be created for specified user
+	 */
+	void createVerificationTokenForUser(final User user, final String token);
 
-    VerificationToken getVerificationToken(final String VerificationToken);
-
+	/**
+	 * Validate verification token.
+	 *
+	 * @param token token to be validated
+	 */
     String validateVerificationToken(String token);
 }

@@ -46,9 +46,7 @@ public class UrlMapping {
 
 	public static final String REGISTRATION_VIEW = "registration";
 
-	public static final String WELCOME_REDIRECT_VIEW = "redirect:/welcome";
-
-	public static final String EDIT_USER_REDIRECT_VIEW = "redirect:/edit/user";
+    public static final String SUCCESS_REGISTER_VIEW = "successRegister";
 
 	public static final String ADD_DOC_REDIRECT_VIEW = "redirect:/add/document";
 

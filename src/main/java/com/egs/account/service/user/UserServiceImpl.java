@@ -59,20 +59,12 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    /**
-     * Find all users.
-     *
-     * @return list of user
-     */
+    @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
-    /**
-     * Find user by id.
-     *
-     * @return user found
-     */
+    @Override
     public User findById(Long id) {
         User user = userRepository.getOne(id);
         domainUtils.handleNotFoundError(user, User.class, id);
@@ -80,11 +72,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    /**
-     * Update user info.
-     *
-     * @param user user Whose info will be updated
-     */
+    @Override
     public void updateUser(User user) {
         Long id = user.getId();
         final User entity = userRepository.getOne(id);
@@ -94,26 +82,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("user with id {} successfully updated", user.getId());
     }
 
-    /**
-     * Update user info.
-     *
-     * @param u1 user whose info will be updated
-     * @param u2 whose info will be used
-     */
-    private void updateUserInfo(User u1, User u2) {
-        u1.setFirstName(u2.getFirstName());
-        u1.setLastName(u2.getLastName());
-        u1.setEmail(u2.getEmail());
-        u1.setSkypeID(u2.getSkypeID());
-        u1.setDateRegistered(new Date());
-        u1.setPassword(bCryptPasswordEncoder.encode(u2.getPassword()));
-    }
-
-    /**
-     * Delete user by id.
-     *
-     * @param id by which user will be deleted
-     */
+    @Override
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
         LOGGER.info("user with id {} successfully deleted", id);
@@ -123,11 +92,6 @@ public class UserServiceImpl implements UserService {
     public void createVerificationTokenForUser(final User user, final String token) {
         final VerificationToken vToken = new VerificationToken(token, user);
         tokenRepository.save(vToken);
-    }
-
-    @Override
-    public VerificationToken getVerificationToken(final String VerificationToken) {
-        return tokenRepository.findByToken(VerificationToken);
     }
 
     @Override
@@ -143,10 +107,25 @@ public class UserServiceImpl implements UserService {
             tokenRepository.delete(verificationToken);
             return TOKEN_EXPIRED;
         }
-
+        //TODO separate the logic due to single responsibility principal
         user.setEnabled(true);
         userRepository.save(user);
 
         return TOKEN_VALID;
+    }
+
+    /**
+     * Update user info.
+     *
+     * @param u1 user whose info will be updated
+     * @param u2 whose info will be used
+     */
+    private void updateUserInfo(User u1, User u2) {
+        u1.setFirstName(u2.getFirstName());
+        u1.setLastName(u2.getLastName());
+        u1.setEmail(u2.getEmail());
+        u1.setSkypeID(u2.getSkypeID());
+        u1.setDateRegistered(new Date());
+        u1.setPassword(bCryptPasswordEncoder.encode(u2.getPassword()));
     }
 }
