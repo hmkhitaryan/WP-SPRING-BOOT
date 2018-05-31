@@ -48,15 +48,14 @@ public class UserServiceImpl implements UserService {
         user.setRoles(new HashSet<>(roleRepository.findAll()));
         user.setDateRegistered(new Date());
         LOGGER.info("user with username {} successfully saved", user.getUsername());
-        User savedUser = userRepository.save(user);
-        return savedUser;
+
+        return userRepository.save(user);
     }
 
     @Override
     public User findByUsername(String username) {
-        User user = userRepository.findByUsername(username);
 
-        return user;
+        return userRepository.findByUsername(username);
     }
 
     @Override

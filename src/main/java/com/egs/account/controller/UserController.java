@@ -150,7 +150,7 @@ public class UserController {
     @RequestMapping(value = UrlMapping.REGISTRATION_CONFIRM, method = RequestMethod.GET)
     public String confirmRegistration(WebRequest request, Model model, @RequestParam("token") String token) {
         final Locale locale = request.getLocale();
-        String validatedToken = userService.validateVerificationToken(token);
+        final String validatedToken = userService.validateVerificationToken(token);
         if (invalidToken(model, locale, validatedToken)) {
             return UrlMapping.BAD_USER_REDIRECT + locale.getLanguage();
         }

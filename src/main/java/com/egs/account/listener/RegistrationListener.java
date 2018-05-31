@@ -1,5 +1,6 @@
-package com.egs.account.event;
+package com.egs.account.listener;
 
+import com.egs.account.event.OnRegistrationCompleteEvent;
 import com.egs.account.model.User;
 import com.egs.account.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -19,6 +19,8 @@ public class UrlMapping {
 
 	public final static String TO_MAP = "/toMap";
 
+    public final static String CHAT = "/chat";
+
 	public final static String EDIT_USER = "/edit/user";
 
 	public static final String DELETE_USER = "/delete/user";

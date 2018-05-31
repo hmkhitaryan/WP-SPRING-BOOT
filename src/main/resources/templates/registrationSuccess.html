@@ -16,11 +16,10 @@
 		 <a th:href="@{'/add/document/' + ${userForm.id}}" th:text="#{document.upload.text}"
             class="btn btn-primary btn-sm"></a>
     </span>
-    <span class="well pull-right">Go to <a href="/welcome" class="btn btn-success custom-width"
-                                           th:text="#{button.yourPage.label}"></a>
-			<a href="/logout" class="btn btn-success custom-width" th:text="#{button.loginPage.label}"></a>
+    <span class="well pull-right">
+        <a href="/welcome" class="btn btn-success custom-width" th:text="#{button.yourPage.label}"></a>
+        <a href="/logout" class="btn btn-success custom-width" th:text="#{button.loginPage.label}"></a>
     </span>
 </div>
 </body>
-
 </html>

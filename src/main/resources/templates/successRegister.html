@@ -6,8 +6,12 @@
     <title th:text="#{button.home.label}">home</title>
 </head>
 <body>
+<div class="pull-right" style="padding-right:50px">
+    <a href="?language=en">English</a>|<a href="?language=fr">French</a>
+</div>
 <div class="container">
     <h1 class="alert alert-success" th:text="#{message.regSucc}">success</h1>
+    <h4 class="alert alert-success" th:text="#{register.confirm.text}"></h4>
     <a th:href="@{/login}" th:text="#{label.login}">login</a>
 </div>
 </body>
