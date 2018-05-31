@@ -41,6 +41,14 @@ public interface UserService {
 	 */
 	User findByUsername(String username);
 
+    /**
+     * Find user by email.
+     *
+     * @param email by which user will be found
+     * @return user found
+     */
+    User findByEmail(String email);
+
 	/**
 	 * Delete user by id.
 	 *

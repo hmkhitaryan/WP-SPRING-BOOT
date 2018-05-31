@@ -3,6 +3,8 @@ package com.egs.account.service.validator;
 import com.egs.account.model.User;
 import com.egs.account.service.user.UserService;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -11,6 +13,7 @@ import org.springframework.validation.Validator;
 
 @Service
 public class ValidationService implements Validator {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationService.class);
 
     private static final String NOT_EMPTY = "NotEmpty";
 
@@ -45,10 +48,8 @@ public class ValidationService implements Validator {
                 errors.rejectValue(USERNAME, "Size.userForm.username");
             }
 
-            final User alreadyExist = userService.findByUsername(username);
-            if (alreadyExist != null) {
-                errors.rejectValue(USERNAME, "Duplicate.userForm.username");
-            }
+            validateUniqueness(errors, user, username);
+
             if (!user.getPasswordConfirm().equals(user.getPassword())) {
                 errors.rejectValue(PASSWORD_CONFIRM, "Diff.passwordConfirm");
             }
@@ -58,6 +59,21 @@ public class ValidationService implements Validator {
 
         if (isInvalidEmail(user.getEmail())) {
             errors.rejectValue(EMAIL, "invalid.email");
+            LOGGER.error("invalid email");
+        }
+    }
+
+    private void validateUniqueness(Errors errors, User user, String username) {
+        final User foundByUname = userService.findByUsername(username);
+        if (foundByUname != null) {
+            errors.rejectValue(USERNAME, "Duplicate.userForm.username");
+            LOGGER.error("user with username {} already exist", user.getUsername());
+        }
+
+        final User foundByEmail = userService.findByEmail(user.getEmail());
+        if (foundByEmail != null) {
+            errors.rejectValue(EMAIL, "Duplicate.userForm.email");
+            LOGGER.error("user with email {} already exist", user.getEmail());
         }
     }
 
@@ -68,6 +84,7 @@ public class ValidationService implements Validator {
         return !email.contains(AT) || !email.contains(".");
     }
 
+    // only for ajax validation
     public boolean isInvalidUsername(String username) {
         if (checkEmpty(username)) {
             return true;
@@ -75,6 +92,11 @@ public class ValidationService implements Validator {
         return isFieldLengthInvalid(username, 4, 25);
     }
 
+    public boolean passwordsMatch(String password, String passwordConfirm) {
+        return StringUtils.equals(password, passwordConfirm);
+    }
+
+    // both for ajax and form submit validation
     public boolean isInvalidPassword(String password) {
         if (checkEmpty(password)) {
             return true;
@@ -84,10 +106,6 @@ public class ValidationService implements Validator {
         }
 
         return !password.matches(REGEX_PASSWORD);
-    }
-
-    public boolean passwordsMatch(String password, String passwordConfirm) {
-        return StringUtils.equals(password, passwordConfirm);
     }
 
     private boolean checkEmpty(String field) {
