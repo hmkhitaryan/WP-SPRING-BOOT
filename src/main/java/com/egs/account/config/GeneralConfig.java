@@ -34,7 +34,7 @@ public class GeneralConfig extends WebMvcConfigurerAdapter {
         return resolver;
     }
 
-    @Bean(name = "domainUtils")
+    @Bean(name = "utilsService")
     public DomainUtils getDomainUtils() {
         return new DomainUtils();
     }

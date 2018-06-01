@@ -21,7 +21,9 @@ public class UIAttribute {
 
 	public static final String SUCCESS = "success";
 
-	public static final String NOT_FOUND = "notFound";
+    public static final String USER_NOT_FOUND = "userNotFound";
 
-	public static final String DOC_OUT_OF_BOUND = "docOutOfBount";
+    public static final String DOC_OUT_OF_BOUND = "docOutOfBound";
+
+    public static final String FRIENDSHIP_NOT_FOUND = "friendshipNotFound";
 }

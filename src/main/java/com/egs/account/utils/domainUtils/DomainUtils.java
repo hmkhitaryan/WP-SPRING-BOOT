@@ -2,12 +2,14 @@ package com.egs.account.utils.domainUtils;
 
 import com.egs.account.exception.DocumentNotFoundException;
 import com.egs.account.exception.DocumentOutOfBoundException;
+import com.egs.account.exception.FriendshipNotFoundException;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.FileBucket;
 import com.egs.account.model.User;
+import com.egs.account.model.chat.Friendship;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.user.UserService;
 import org.slf4j.Logger;
@@ -171,6 +173,9 @@ public class DomainUtils {
             }
             if (clazz.equals(Catalog.class)) {
                 throw new DocumentNotFoundException(String.format("No document found with this id %s", id));
+            }
+            if (clazz.equals(Friendship.class)) {
+                throw new FriendshipNotFoundException(String.format("No document found with this id %s", id));
             }
         }
     }

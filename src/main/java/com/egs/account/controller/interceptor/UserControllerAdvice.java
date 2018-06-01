@@ -2,6 +2,7 @@ package com.egs.account.controller.interceptor;
 
 import com.egs.account.exception.DocumentNotFoundException;
 import com.egs.account.exception.DocumentOutOfBoundException;
+import com.egs.account.exception.FriendshipNotFoundException;
 import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import org.slf4j.Logger;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
-import static com.egs.account.mapping.UIAttribute.DOC_OUT_OF_BOUND;
-import static com.egs.account.mapping.UIAttribute.NOT_FOUND;
+import static com.egs.account.mapping.UIAttribute.*;
 
 /**
  * @author Hayk_Mkhitaryan
@@ -34,18 +34,23 @@ public class UserControllerAdvice {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ModelAndView handleUserNotFoundException() {
-        return initModelAndView("account.user.label", NOT_FOUND);
+        return initModelAndView("account.user.label", USER_NOT_FOUND);
     }
 
     @ExceptionHandler(DocumentNotFoundException.class)
     public ModelAndView handleDocumentNotFoundException() {
-        return initModelAndView("account.document.label", NOT_FOUND);
+        return initModelAndView("account.document.label", USER_NOT_FOUND);
     }
 
 
     @ExceptionHandler(DocumentOutOfBoundException.class)
     public ModelAndView handleDocumentOutOfBoundException() {
         return initModelAndView("account.document.label", DOC_OUT_OF_BOUND);
+    }
+
+    @ExceptionHandler(FriendshipNotFoundException.class)
+    public ModelAndView handleFriendshipNotFoundException() {
+        return initModelAndView("account.friendship.label", FRIENDSHIP_NOT_FOUND);
     }
 
 

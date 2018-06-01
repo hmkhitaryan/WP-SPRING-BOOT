@@ -1,4 +1,4 @@
-package com.egs.account.ajax;
+package com.egs.account.model.ajax;
 
 /**
  * @author Hayk_Mkhitaryan

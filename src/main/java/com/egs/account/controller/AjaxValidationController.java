@@ -1,7 +1,7 @@
 package com.egs.account.controller;
 
-import com.egs.account.ajax.JsonResponse;
 import com.egs.account.mapping.UrlMapping;
+import com.egs.account.model.ajax.JsonResponse;
 import com.egs.account.service.validator.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

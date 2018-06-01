@@ -1,14 +1,17 @@
 package com.egs.account.controller;
 
 import com.egs.account.event.OnRegistrationCompleteEvent;
+import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
 import com.egs.account.model.User;
+import com.egs.account.model.ajax.JsonUser;
 import com.egs.account.service.catalog.CatalogService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
 import com.egs.account.service.validator.ValidationService;
+import com.egs.account.utils.convertor.UserToJsonUserConverter;
 import com.egs.account.utils.domainUtils.DomainUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +61,7 @@ public class UserController {
     MessageSource messageSource;
 
     @Autowired
-    DomainUtils domainUtils;
+    DomainUtils utilsService;
 
     private UserService userService;
 
@@ -108,7 +111,7 @@ public class UserController {
         final User userForm = userService.findByUsername(userName);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
         final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
-        final List<String> links = domainUtils.getImageLinks(catalogs);
+        final List<String> links = utilsService.getImageLinks(catalogs);
         model.addAttribute(BUCKET_LINKS, links);
         model.addAttribute(DOC_SIZE, links.size());
 
@@ -193,6 +196,16 @@ public class UserController {
         userService.deleteUserById(id);
 
         return UrlMapping.DELETE_SUCCESS_VIEW;
+    }
+
+    @RequestMapping(value = "/findUser", method = RequestMethod.POST)
+    public @ResponseBody
+    JsonUser findUserByUsername(@RequestParam("username") String username) {
+        User userFound = userService.findByUsername(username);
+        if (userFound == null) {
+            throw new UserNotFoundException("no user found with specified username");
+        }
+        return UserToJsonUserConverter.toJsonUser(userFound);
     }
 
     private String getAppUrl(HttpServletRequest request) {

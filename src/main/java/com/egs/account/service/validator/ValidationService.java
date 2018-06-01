@@ -98,14 +98,15 @@ public class ValidationService implements Validator {
 
     // both for ajax and form submit validation
     public boolean isInvalidPassword(String password) {
-        if (checkEmpty(password)) {
-            return true;
-        }
-        if (isFieldLengthInvalid(password, 8, 25)) {
-            return true;
-        }
-
-        return !password.matches(REGEX_PASSWORD);
+//        if (checkEmpty(password)) {
+//            return true;
+//        }
+//        if (isFieldLengthInvalid(password, 8, 25)) {
+//            return true;
+//        }
+//
+//        return !password.matches(REGEX_PASSWORD);
+        return false;
     }
 
     private boolean checkEmpty(String field) {
