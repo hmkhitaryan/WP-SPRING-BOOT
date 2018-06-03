@@ -107,8 +107,8 @@ public class UserController {
 
     @RequestMapping(value = UrlMapping.WELCOME, method = RequestMethod.GET)
     public String welcome(Model model) {
-        final String userName = context.getUserPrincipal().getName();
-        final User userForm = userService.findByUsername(userName);
+        final String username = context.getUserPrincipal().getName();
+        final User userForm = userService.findByUsername(username);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
         final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
         final List<String> links = utilsService.getImageLinks(catalogs);

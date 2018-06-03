@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $('#findUsers').blur(function () {
         initUsernamefind('foundUserUl', 'noUserFoundUl', 'No user found with that Username');
+        initAddFriend();
     });
 
 
@@ -10,9 +11,26 @@ var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
-var foundUserUl = document.querySelector('#foundUserUl');
-var noUserFoundUl = document.querySelector('#noUserFoundUl');
-
+function initAddFriend() {
+    $.ajax({
+        type: "POST",
+        url: '/addFriend',
+        data: {
+            receiverUsername: $('#findUsers').val()
+        },
+        success: function (response) {
+            if (response.status != "SUCCESS") {
+                $('#' + errorDiv).html(errorMessage);
+                $('#' + errorDiv).show('slow');
+            } else {
+                $('#' + errorDiv).html("");
+            }
+        },
+        error: function (responseText) {
+            $('#' + errorUl).text(responseText);
+        }
+    });
+}
 function initUsernamefind(successUl, errorUl, errorMessage) {
     $.ajax({
         type: "POST",
@@ -22,23 +40,39 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
         },
         success: function (response) {
             var username = response.username;
+            var noUserFoundArea = document.querySelector('#noUserFoundUl');
             if (username === undefined) {
-                $('#' + errorUl).html(errorMessage);
-                $('#' + errorUl).show('slow');
+                var errorMessageText = document.createTextNode(errorMessage);
+                noUserFoundArea.style['background-color'] = '#ff5652';
+                noUserFoundArea.appendChild(errorMessageText);
+                // $('#' + errorUl).show('slow');
             } else {
-                $('#' + errorUl).html("");
-                $('#' + successUl).html(response.username);
-                var messageElement = document.createElement('li');
+                noUserFoundArea.classList.add('hidden');
+                var foundUserArea = document.querySelector('#foundUserUl');
+                // $('#' + errorUl).html("");
+                var usernameTextElement = document.createElement('li');
                 var avatarElement = document.createElement('i');
                 var avatarText = document.createTextNode(username[0]);
                 avatarElement.appendChild(avatarText);
                 avatarElement.style['background-color'] = getAvatarColor(username);
-                messageElement.appendChild(avatarElement);
-                foundUserUl.appendChild(messageElement);
+                usernameTextElement.appendChild(avatarElement);
+
+                var usernameElement = document.createElement('span');
+                var usernameText = document.createTextNode(response.username);
+                usernameElement.appendChild(usernameText);
+                var friendButtonElement = document.createElement('button');
+                friendButtonElement.setAttribute("id", "addFriend");
+                friendButtonElement.setAttribute("class", "btn btn-lg btn-primary btn-block");
+                friendButtonElement.setAttribute("value", "Contact");
+                friendButtonElement.style['background-color'] = '#4CAF50';
+                friendButtonElement.style['margin'] = '4px 2px';
+                usernameElement.appendChild(friendButtonElement);
+                usernameTextElement.appendChild(usernameElement);
+                foundUserArea.appendChild(usernameTextElement);
+                // $('#' + successUl).html(messageElement);
             }
         },
         error: function (responseText) {
-            alert("error");
             $('#' + errorUl).text(responseText);
         }
     });

@@ -1,6 +1,7 @@
 package com.egs.account.service.validator;
 
 import com.egs.account.model.User;
+import com.egs.account.model.ajax.JsonResponse;
 import com.egs.account.service.user.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,10 @@ public class ValidationService implements Validator {
     private static final String AT = "@";
 
     private static final String PASSWORD = "password";
+
+    private static final String FAIL = "FAIL";
+
+    private static final String SUCCESS = "SUCCESS";
 
     private static final String REGEX_PASSWORD = "(?=.*?\\d)(?=.*?[a-zA-Z])(?=.*?[^\\w]).{8,}";
 
@@ -122,5 +127,15 @@ public class ValidationService implements Validator {
 
     private boolean isFieldLengthInvalid(String field, int lowerBound, int upperBound) {
         return field.length() < lowerBound || field.length() > upperBound;
+    }
+
+    public JsonResponse processValidate(boolean negativeExp) {
+        JsonResponse res = new JsonResponse();
+        if (negativeExp) {
+            res.setStatus(FAIL);
+        } else {
+            res.setStatus(SUCCESS);
+        }
+        return res;
     }
 }

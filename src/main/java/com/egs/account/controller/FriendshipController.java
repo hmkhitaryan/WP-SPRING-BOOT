@@ -1,21 +1,24 @@
 package com.egs.account.controller;
 
 import com.egs.account.model.User;
+import com.egs.account.model.ajax.JsonResponse;
 import com.egs.account.model.chat.Friendship;
 import com.egs.account.service.friendship.FriendshipService;
 import com.egs.account.service.user.UserService;
+import com.egs.account.service.validator.ValidationService;
 import com.egs.account.utils.domainUtils.DomainUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class FriendshipController {
     private static final Logger LOGGER = LoggerFactory.getLogger(FriendshipController.class);
+    private static final String RECEIVER_USERNAME = "receiverUsername";
 
     @Autowired
     private UserService userService;
@@ -26,15 +29,28 @@ public class FriendshipController {
     @Autowired
     private FriendshipService friendshipService;
 
+    @Autowired
+    private HttpServletRequest context;
+
+    @Autowired
+    private ValidationService userValidator;
+
     @RequestMapping(value = "/addFriend", method = RequestMethod.POST)
-    public String addFriend(@PathVariable Long userInitId, @PathVariable Long userReceiverId) {
-        final User initiatorUser = userService.findById(userInitId);
-        utilsService.handleNotFoundError(initiatorUser, User.class, userInitId);
-        final User receiverUser = userService.findById(userReceiverId);
-        utilsService.handleNotFoundError(receiverUser, User.class, userReceiverId);
+    public @ResponseBody
+    JsonResponse addFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
+        final String initiatorUsername = context.getUserPrincipal().getName();
+        boolean failed = false;
+        final User initiatorUser = userService.findByUsername(initiatorUsername);
+        final User receiverUser = userService.findByUsername(receiverUsername);
+        if (receiverUser == null) {
+            failed = true;
+        }
         final Friendship friendship = new Friendship(initiatorUser, receiverUser);
         friendshipService.save(friendship);
+        if (friendship.getId() == null) {
+            failed = true;
+        }
 
-        return "successFriendship";
+        return userValidator.processValidate(failed);
     }
 }
