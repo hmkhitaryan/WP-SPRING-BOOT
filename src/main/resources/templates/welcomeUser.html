@@ -3,11 +3,11 @@
 <html lang="en">
 <head>
     <a href="/toMap" th:text="#{document.tomap.text}"></a>
-    <a href="/chat" th:text="#{document.tochat.text}" style="padding-right:50px" class="pull-right"></a>
-    <br>
     <div class="pull-right" style="padding-right:50px">
         <a href="?language=en">English</a>|<a href="?language=fr">French</a>
     </div>
+    <br>
+    <a href="/chat" th:text="#{document.tochat.text}" style="padding-right:50px" class="pull-right"></a>
     <title>Welcome Page</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css/}"/>
 
@@ -25,7 +25,7 @@
             <form id="logoutForm" method="POST" action="/logout">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
-            <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}"></h2>
+            <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}" id="userPrincipal"></h2>
             <div class="pull-right">
                 <label th:text="#{user.find.label}"></label>
                 <input type="text" class="form-control" name="findUsers" id="findUsers">

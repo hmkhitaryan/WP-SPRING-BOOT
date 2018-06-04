@@ -1,5 +1,6 @@
 package com.egs.account.controller;
 
+import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.User;
 import com.egs.account.model.ajax.JsonResponse;
 import com.egs.account.model.chat.Friendship;
@@ -11,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,7 +39,7 @@ public class FriendshipController {
     @Autowired
     private ValidationService userValidator;
 
-    @RequestMapping(value = "/addFriend", method = RequestMethod.POST)
+    @RequestMapping(value = UrlMapping.ADD_FRIEND, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse addFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
         final String initiatorUsername = context.getUserPrincipal().getName();
@@ -50,6 +54,20 @@ public class FriendshipController {
         if (friendship.getId() == null) {
             failed = true;
         }
+
+        return userValidator.processValidate(failed);
+    }
+
+    @RequestMapping(value = UrlMapping.UN_FRIEND, method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse unFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
+        boolean failed = false;
+        final User receiverUser = userService.findByUsername(receiverUsername);
+        if (receiverUser == null) {
+            failed = true;
+        }
+        final Friendship friendship = friendshipService.findByReceiver(receiverUser);
+        friendshipService.delete(friendship);
 
         return userValidator.processValidate(failed);
     }

@@ -24,6 +24,9 @@ public class Friendship {
         this.receiver = receiver;
     }
 
+    public Friendship() {
+    }
+
     public Long getId() {
         return id;
     }

@@ -205,6 +205,9 @@ public class UserController {
         if (userFound == null) {
             throw new UserNotFoundException("no user found with specified username");
         }
+        if (context.getUserPrincipal() != null && username.equalsIgnoreCase(context.getUserPrincipal().getName())) {
+            throw new IllegalStateException("can not find yourself");
+        }
         return UserToJsonUserConverter.toJsonUser(userFound);
     }
 

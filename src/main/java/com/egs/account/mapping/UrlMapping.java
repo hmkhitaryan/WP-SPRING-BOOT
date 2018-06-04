@@ -68,4 +68,8 @@ public class UrlMapping {
 
     public static final String EMAIL_ERROR_VIEW = "error/emailError";
 
+    public static final String ADD_FRIEND = "addFriend";
+
+    public static final String UN_FRIEND = "unFriend";
+
 }

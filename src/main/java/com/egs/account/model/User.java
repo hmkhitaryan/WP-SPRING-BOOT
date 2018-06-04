@@ -1,6 +1,7 @@
 package com.egs.account.model;
 
 
+import com.egs.account.model.verification.VerificationToken;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
@@ -40,6 +41,17 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Catalog> catalogs;
+
+    public VerificationToken getToken() {
+        return token;
+    }
+
+    public void setToken(VerificationToken token) {
+        this.token = token;
+    }
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private VerificationToken token;
 
     public User() {
         super();
