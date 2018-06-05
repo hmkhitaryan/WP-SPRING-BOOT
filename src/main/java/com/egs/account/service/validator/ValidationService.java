@@ -129,10 +129,11 @@ public class ValidationService implements Validator {
         return field.length() < lowerBound || field.length() > upperBound;
     }
 
-    public JsonResponse processValidate(boolean negativeExp) {
+    public JsonResponse processValidate(boolean negativeExp, String message) {
         JsonResponse res = new JsonResponse();
         if (negativeExp) {
             res.setStatus(FAIL);
+            res.setMessage(message);
         } else {
             res.setStatus(SUCCESS);
         }

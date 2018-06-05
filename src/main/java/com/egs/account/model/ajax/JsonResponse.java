@@ -7,7 +7,7 @@ public class JsonResponse {
 
 	private String status;
 
-	private Object result;
+    private String message;
 
 	public String getStatus() {
 		return status;
@@ -17,11 +17,11 @@ public class JsonResponse {
 		this.status = status;
 	}
 
-	public Object getResult() {
-		return result;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setResult(Object result) {
-		this.result = result;
+    public void setMessage(String message) {
+        this.message = message;
 	}
 }

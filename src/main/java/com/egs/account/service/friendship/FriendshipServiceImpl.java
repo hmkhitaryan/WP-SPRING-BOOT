@@ -1,5 +1,6 @@
 package com.egs.account.service.friendship;
 
+import com.egs.account.exception.FriendshipNotFoundException;
 import com.egs.account.model.User;
 import com.egs.account.model.chat.Friendship;
 import com.egs.account.repository.friendship.FriendshipRepository;
@@ -26,6 +27,18 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public Friendship findByInitiator(User initiatorUser) {
         return friendshipRepository.findByInitiator(initiatorUser);
+    }
+
+    @Override
+    public Friendship findByInitiatorOrReceiver(User user) {
+        Friendship friendship = friendshipRepository.findByInitiator(user);
+        if (friendship == null) {
+            friendship = friendshipRepository.findByReceiver(user);
+            if (friendship == null) {
+                throw new FriendshipNotFoundException("No friendship found with this user");
+            }
+        }
+        return friendship;
     }
 
     @Override

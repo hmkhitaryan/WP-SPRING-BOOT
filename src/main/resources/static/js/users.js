@@ -75,46 +75,32 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
                 friendButtonElement.innerHTML = 'contact';
                 friendButtonElement.style['background-color'] = '#4CAF50';
                 friendButtonElement.style['margin'] = '1px 0.5px';
+
+                var action = "addFriend";
                 friendButtonElement.onclick = function () {
+                    var url = action === 'addFriend' ? '/addFriend' : 'unFriend';
                     $.ajax({
                         type: "POST",
-                        url: "/addFriend",
+                        url: url,
                         data: {
                             receiverUsername: $('#findUsers').val()
                         },
                         success: function (response) {
                             var foundUserArea = document.querySelector('#foundUserUl');
                             if (response.status != "SUCCESS") {
-                                foundUserArea.style['background-color'] = '#ff5652';
+                                if (action === "addFriend") {
+                                    friendButtonElement.style['background-color'] = '#00ff04';
+                                } else {
+                                    friendButtonElement.style['background-color'] = '#ff5652';
+                                }
                             } else {
-                                // foundUserArea.style['background-color'] = '#00ff04';
+                                if (action === "addFriend") {
+                                    action = "unFriend";
+                                    friendButtonElement.style['background-color'] = '#ff5652';
 
-                                var successLiElement = document.createElement('li');
-                                var successElement = document.createElement('i');
-                                successElement.style['background-color'] = '#00ff04';
-                                successLiElement.appendChild(successElement);
-                                foundUserArea.appendChild(successLiElement);
-                                friendButtonElement.style['background-color'] = '#ff5652';
-                                friendButtonElement.innerHTML = 'unfriend';
-                                friendButtonElement.onclick = function () {
-                                    $.ajax({
-                                        type: "POST",
-                                        url: "/unFriend",
-                                        data: {
-                                            receiverUsername: $('#findUsers').val()
-                                        },
-                                        success: function (response) {
-                                            var foundUserArea = document.querySelector('#foundUserUl');
-                                            if (response.status != "SUCCESS") {
-                                                friendButtonElement.style['background-color'] = '#ff5652';
-                                            } else {
-                                                friendButtonElement.style['background-color'] = '#00ff04';
-                                            }
-                                        },
-                                        error: function (responseText) {
-                                            $('#' + 'foundUserUl').text(responseText);
-                                        }
-                                    });
+                                } else {
+                                    action = "addFriend";
+                                    friendButtonElement.style['background-color'] = '#00ff04';
                                 }
                             }
                         },

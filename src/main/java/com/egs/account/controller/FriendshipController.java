@@ -45,17 +45,25 @@ public class FriendshipController {
         final String initiatorUsername = context.getUserPrincipal().getName();
         boolean failed = false;
         final User initiatorUser = userService.findByUsername(initiatorUsername);
-        final User receiverUser = userService.findByUsername(receiverUsername);
-        if (receiverUser == null) {
-            failed = true;
+        Friendship friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
+        String message = "";
+        if (friendship == null) {
+            final User receiverUser = userService.findByUsername(receiverUsername);
+            if (receiverUser == null) {
+                failed = true;
+                message = "Requested user not found";
+            } else {
+                failed = true;
+                message = "Requested user is already your friend";
+            }
+            friendship = new Friendship(initiatorUser, receiverUser);
         }
-        final Friendship friendship = new Friendship(initiatorUser, receiverUser);
         friendshipService.save(friendship);
         if (friendship.getId() == null) {
             failed = true;
         }
 
-        return userValidator.processValidate(failed);
+        return userValidator.processValidate(failed, message);
     }
 
     @RequestMapping(value = UrlMapping.UN_FRIEND, method = RequestMethod.POST)
@@ -63,12 +71,14 @@ public class FriendshipController {
     JsonResponse unFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
         boolean failed = false;
         final User receiverUser = userService.findByUsername(receiverUsername);
+        String message = "";
         if (receiverUser == null) {
             failed = true;
+            message = "Requested user not found";
         }
         final Friendship friendship = friendshipService.findByReceiver(receiverUser);
         friendshipService.delete(friendship);
 
-        return userValidator.processValidate(failed);
+        return userValidator.processValidate(failed, message);
     }
 }

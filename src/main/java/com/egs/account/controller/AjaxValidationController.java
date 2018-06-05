@@ -16,38 +16,48 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class AjaxValidationController {
 
-	private static final String PASSWORD = "password";
+    private static final String PASSWORD = "password";
 
-	private static final String PASSWORD_CONFIRM = "passwordConfirm";
+    private static final String PASSWORD_CONFIRM = "passwordConfirm";
 
-	private static final String EMAIL = "email";
+    private static final String EMAIL = "email";
 
     private static final String USERNAME = "username";
 
-	@Autowired
-	private ValidationService userValidator;
+    @Autowired
+    private ValidationService userValidator;
 
     @RequestMapping(value = UrlMapping.CHECK_USERNAME, method = RequestMethod.POST)
-	public @ResponseBody
+    public @ResponseBody
     JsonResponse resolveUsernameValidation(@RequestParam(USERNAME) String username) {
-        return userValidator.processValidate(userValidator.isInvalidUsername(username));
+        return doValidation(userValidator.isInvalidUsername(username), "Invalid username");
     }
 
     @RequestMapping(path = {UrlMapping.CHECK_EMAIL, UrlMapping.CHECK_EMAIL_EDIT}, method = RequestMethod.POST)
-	public @ResponseBody
+    public @ResponseBody
     JsonResponse resolveEmailValidation(@RequestParam(EMAIL) String email) {
-		return userValidator.processValidate(userValidator.isInvalidEmail(email));
-	}
+        return doValidation(userValidator.isInvalidUsername(email), "Invalid email");
+    }
 
     @RequestMapping(path = {UrlMapping.CHECK_PASSWORD, UrlMapping.CHECK_PASSWORD_EDIT}, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse resolvePasswordValidation(@RequestParam(PASSWORD) String password) {
-        return userValidator.processValidate(userValidator.isInvalidPassword(password));
+        return doValidation(userValidator.isInvalidUsername(password), "Invalid password");
     }
 
     @RequestMapping(value = UrlMapping.CHECK_PASSWORD_CONFIRM, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse resolvePasswordConfirmValidation(@RequestParam(PASSWORD) String password, @RequestParam(PASSWORD_CONFIRM) String passwordConfirm) {
-        return userValidator.processValidate(!userValidator.passwordsMatch(password, passwordConfirm));
+        return doValidation(!userValidator.passwordsMatch(password, passwordConfirm), "Passwords do not match");
+    }
+
+    private JsonResponse doValidation(boolean negativeExp, String message) {
+        String errorMessage = "";
+        boolean failed = false;
+        if (negativeExp) {
+            errorMessage = message;
+            failed = true;
+        }
+        return userValidator.processValidate(failed, message);
     }
 }

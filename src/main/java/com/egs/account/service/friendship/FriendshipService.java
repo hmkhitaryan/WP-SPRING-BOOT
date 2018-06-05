@@ -10,5 +10,7 @@ public interface FriendshipService {
 
     Friendship findByInitiator(User receiverUser);
 
+    Friendship findByInitiatorOrReceiver(User user);
+
     void delete(Friendship friendship);
 }
