@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 public class FriendshipServiceImpl implements FriendshipService {
@@ -30,14 +32,18 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Friendship findByInitiatorOrReceiver(User user) {
-        Friendship friendship = friendshipRepository.findByInitiator(user);
-        if (friendship == null) {
-            friendship = friendshipRepository.findByReceiver(user);
-            if (friendship == null) {
-                throw new FriendshipNotFoundException("No friendship found with this user");
-            }
+    public Optional<Friendship> findByInitiatorOrReceiver(User user) {
+        Optional<Friendship> friendship = Optional.ofNullable(friendshipRepository.findByInitiator(user));
+        if (!friendship.isPresent()) {
+            friendship = Optional.ofNullable(friendshipRepository.findByReceiver(user));
         }
+        try {
+            friendship.orElseThrow(() -> new FriendshipNotFoundException("No friendship found with this user"));
+        } catch (final FriendshipNotFoundException e) {
+            return Optional.empty();
+        }
+
+
         return friendship;
     }
 

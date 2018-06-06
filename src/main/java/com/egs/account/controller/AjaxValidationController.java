@@ -36,13 +36,13 @@ public class AjaxValidationController {
     @RequestMapping(path = {UrlMapping.CHECK_EMAIL, UrlMapping.CHECK_EMAIL_EDIT}, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse resolveEmailValidation(@RequestParam(EMAIL) String email) {
-        return doValidation(userValidator.isInvalidUsername(email), "Invalid email");
+        return doValidation(userValidator.isInvalidEmail(email), "Invalid email");
     }
 
     @RequestMapping(path = {UrlMapping.CHECK_PASSWORD, UrlMapping.CHECK_PASSWORD_EDIT}, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse resolvePasswordValidation(@RequestParam(PASSWORD) String password) {
-        return doValidation(userValidator.isInvalidUsername(password), "Invalid password");
+        return doValidation(userValidator.isInvalidPassword(password), "Invalid password");
     }
 
     @RequestMapping(value = UrlMapping.CHECK_PASSWORD_CONFIRM, method = RequestMethod.POST)

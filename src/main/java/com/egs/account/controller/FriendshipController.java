@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Controller
 public class FriendshipController {
@@ -45,23 +46,10 @@ public class FriendshipController {
         final String initiatorUsername = context.getUserPrincipal().getName();
         boolean failed = false;
         final User initiatorUser = userService.findByUsername(initiatorUsername);
-        Friendship friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
+        Optional<Friendship> friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
+
         String message = "";
-        if (friendship == null) {
-            final User receiverUser = userService.findByUsername(receiverUsername);
-            if (receiverUser == null) {
-                failed = true;
-                message = "Requested user not found";
-            } else {
-                failed = true;
-                message = "Requested user is already your friend";
-            }
-            friendship = new Friendship(initiatorUser, receiverUser);
-        }
-        friendshipService.save(friendship);
-        if (friendship.getId() == null) {
-            failed = true;
-        }
+        processIfFailed(friendship, message, receiverUsername, failed, initiatorUser);
 
         return userValidator.processValidate(failed, message);
     }
@@ -80,5 +68,20 @@ public class FriendshipController {
         friendshipService.delete(friendship);
 
         return userValidator.processValidate(failed, message);
+    }
+
+    private void processIfFailed(Optional<Friendship> friendship, String message, String receiverUsername, boolean failed, User initiatorUser) {
+        if (!friendship.isPresent()) {
+            final User receiverUser = userService.findByUsername(receiverUsername);
+            if (receiverUser == null) {
+                failed = true;
+                message = "Requested user not found";
+            }
+            friendship = Optional.of(new Friendship(initiatorUser, receiverUser));
+            friendshipService.save(friendship.get());
+            if (friendship.get().getId() == null) {
+                failed = true;
+            }
+        }
     }
 }

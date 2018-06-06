@@ -56,22 +56,13 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
             } else {
                 noUserFoundArea.classList.add('hidden');
                 var foundUserArea = document.querySelector('#foundUserUl');
-
-                var usernameTextElement = document.createElement('li');
-                var avatarElement = document.createElement('i');
-                var avatarText = document.createTextNode(username[0]);
-                avatarElement.appendChild(avatarText);
-                avatarElement.style['background-color'] = getAvatarColor(username);
-                usernameTextElement.appendChild(avatarElement);
-
                 var usernameElement = document.createElement('span');
                 var usernameText = document.createTextNode(response.username);
                 usernameElement.appendChild(usernameText);
 
                 var friendButtonElement = document.createElement('button');
                 friendButtonElement.setAttribute("id", "addFriend");
-                // friendButtonElement.setAttribute("class", "btn btn-lg btn-primary btn-block");
-                // friendButtonElement.setAttribute("value", "Contact");
+                friendButtonElement.setAttribute("class", "btn btn-success custom-width");
                 friendButtonElement.innerHTML = 'contact';
                 friendButtonElement.style['background-color'] = '#4CAF50';
                 friendButtonElement.style['margin'] = '1px 0.5px';
@@ -111,8 +102,7 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
                     return false;
                 };
                 usernameElement.appendChild(friendButtonElement);
-                usernameTextElement.appendChild(usernameElement);
-                foundUserArea.appendChild(usernameTextElement);
+                foundUserArea.appendChild(usernameElement);
             }
         },
         error: function (responseText) {

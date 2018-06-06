@@ -3,6 +3,8 @@ package com.egs.account.service.friendship;
 import com.egs.account.model.User;
 import com.egs.account.model.chat.Friendship;
 
+import java.util.Optional;
+
 public interface FriendshipService {
     Friendship save(Friendship friendship);
 
@@ -10,7 +12,7 @@ public interface FriendshipService {
 
     Friendship findByInitiator(User receiverUser);
 
-    Friendship findByInitiatorOrReceiver(User user);
+    Optional<Friendship> findByInitiatorOrReceiver(User user);
 
     void delete(Friendship friendship);
 }
