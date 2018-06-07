@@ -57,6 +57,10 @@ public class UserController {
 
     private static final String TOKEN_EXPIRED = "expired";
 
+    private static final String NO_USER_FOUND_WITH_SPECIFIED_USERNAME = "no user found with specified username";
+
+    private static final String CAN_NOT_FIND_YOURSELF = "can not find yourself";
+
     @Autowired
     MessageSource messageSource;
 
@@ -107,7 +111,7 @@ public class UserController {
 
     @RequestMapping(value = UrlMapping.WELCOME, method = RequestMethod.GET)
     public String welcome(Model model) {
-        final String username = context.getUserPrincipal().getName();
+        final String username = utilsService.getUserPrincipalName(context);
         final User userForm = userService.findByUsername(username);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
         final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
@@ -165,7 +169,7 @@ public class UserController {
     public String showUpdateUserPage(@PathVariable Long id, ModelMap model) {
         final User user = userService.findById(id);
         if ((user == null || context.getUserPrincipal() == null) ||
-                (user.getUsername() != null && !user.getUsername().equals(context.getUserPrincipal().getName()))) {
+                (user.getUsername() != null && !user.getUsername().equals(utilsService.getUserPrincipalName(context)))) {
 
             return UrlMapping.LOGIN_VIEW;
         }
@@ -203,18 +207,18 @@ public class UserController {
     JsonUser findUserByUsername(@RequestParam("username") String username) {
         User userFound = userService.findByUsername(username);
         if (userFound == null) {
-            throw new UserNotFoundException("no user found with specified username");
+            throw new UserNotFoundException(NO_USER_FOUND_WITH_SPECIFIED_USERNAME);
         }
-        if (context.getUserPrincipal() != null && username.equalsIgnoreCase(context.getUserPrincipal().getName())) {
-            throw new IllegalStateException("can not find yourself");
+        if (username.equalsIgnoreCase(utilsService.getUserPrincipalName(context))) {
+            throw new IllegalStateException(CAN_NOT_FIND_YOURSELF);
         }
+
         return UserToJsonUserConverter.toJsonUser(userFound);
     }
 
     private String getAppUrl(HttpServletRequest request) {
         return HTTP + request.getServerName() + COLON_SIGN + request.getServerPort() + request.getContextPath();
     }
-
 
     private boolean invalidToken(Model model, Locale locale, String validatedToken) {
         if (validatedToken.equalsIgnoreCase(TOKEN_INVALID)) {

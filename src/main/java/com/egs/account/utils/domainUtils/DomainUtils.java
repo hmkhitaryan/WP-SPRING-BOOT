@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class DomainUtils {
 
@@ -166,6 +167,27 @@ public class DomainUtils {
         }
     }
 
+    /**
+     * Get the name of principal user.
+     *
+     * @param request request to get the user principal name from
+     * @throws IllegalStateException if request or the user principal of the request is null
+     */
+    public String getUserPrincipalName(HttpServletRequest request) {
+        return Optional.of(request)
+                .map(HttpServletRequest::getUserPrincipal)
+                .map(java.security.Principal::getName)
+                .orElseThrow(IllegalStateException::new);
+    }
+
+    /**
+     * Handle not found exceptions.
+     *
+     * @param entity the entity which will be User, Catalog or Friendship
+     * @param clazz  the class of the entity
+     * @param id     the id of the entity
+     * @throws IllegalStateException if request or the user principal of the request is null
+     */
     public void handleNotFoundError(Object entity, Class clazz, Object id) {
         if (entity == null) {
             if (clazz.equals(User.class)) {

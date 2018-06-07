@@ -43,15 +43,34 @@ public class FriendshipController {
     @RequestMapping(value = UrlMapping.ADD_FRIEND, method = RequestMethod.POST)
     public @ResponseBody
     JsonResponse addFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
-        final String initiatorUsername = context.getUserPrincipal().getName();
-        boolean failed = false;
+        final String initiatorUsername = utilsService.getUserPrincipalName(context);
         final User initiatorUser = userService.findByUsername(initiatorUsername);
         Optional<Friendship> friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
 
-        String message = "";
-        processIfFailed(friendship, message, receiverUsername, failed, initiatorUser);
+        return doFriendship(receiverUsername, initiatorUser, friendship);
+    }
 
+    private JsonResponse doFriendship(@RequestParam(RECEIVER_USERNAME) String receiverUsername, User initiatorUser, Optional<Friendship> friendship) {
+        boolean failed = false;
+        String message = "";
+        if (!friendship.isPresent()) {
+            final User receiverUser = userService.findByUsername(receiverUsername);
+            if (receiverUser == null) {
+                failed = true;
+                message = "Requested user not found";
+            }
+            friendship = Optional.of(new Friendship(initiatorUser, receiverUser));
+            friendshipService.save(friendship.get());
+            if (friendship.get().getId() == null) {
+                failed = true;
+            }
+        }
         return userValidator.processValidate(failed, message);
+    }
+
+    public static String getUserPrincipalName(HttpServletRequest request) {
+        return Optional.of(request.getUserPrincipal().getName())
+                .orElseThrow(IllegalStateException::new);
     }
 
     @RequestMapping(value = UrlMapping.UN_FRIEND, method = RequestMethod.POST)
@@ -68,20 +87,5 @@ public class FriendshipController {
         friendshipService.delete(friendship);
 
         return userValidator.processValidate(failed, message);
-    }
-
-    private void processIfFailed(Optional<Friendship> friendship, String message, String receiverUsername, boolean failed, User initiatorUser) {
-        if (!friendship.isPresent()) {
-            final User receiverUser = userService.findByUsername(receiverUsername);
-            if (receiverUser == null) {
-                failed = true;
-                message = "Requested user not found";
-            }
-            friendship = Optional.of(new Friendship(initiatorUser, receiverUser));
-            friendshipService.save(friendship.get());
-            if (friendship.get().getId() == null) {
-                failed = true;
-            }
-        }
     }
 }

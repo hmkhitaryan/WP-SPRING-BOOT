@@ -1,5 +1,6 @@
 package com.egs.account.config;
 
+import com.egs.account.config.security.SessionExpiredStrategy;
 import com.egs.account.utils.domainUtils.DomainUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -59,5 +60,11 @@ public class GeneralConfig extends WebMvcConfigurerAdapter {
 
         super.addResourceHandlers(registry);
     }
+
+    @Bean(name = "sessionExpiredStrategy")
+    public SessionExpiredStrategy getSessionExpiredStrategy() {
+        return new SessionExpiredStrategy();
+    }
+
 }
 

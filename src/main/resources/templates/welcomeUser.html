@@ -18,6 +18,22 @@
     <script type="text/javascript" th:src="@{/js/users.js/}"></script>
 </head>
 <body>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #00a5ff">
+                <h5 class="modal-title" id="exampleModalLongTitle">Friendship</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Congratulations, you are already friends
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="generic-container">
     <div class="panel panel-default">
@@ -27,8 +43,13 @@
             </form>
             <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}" id="userPrincipal"></h2>
             <div class="pull-right">
-                <label th:text="#{user.find.label}"></label>
-                <input type="text" class="form-control" name="findUsers" id="findUsers">
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" name="findUsers" id="findUsers" th:placeholder="#{user.find.label}" autofocus="autofocus">
+                        <input type="button" id="searchUser" value="Find"/>
+                    </td>
+                </tr>
+
                 <ul id="foundUserUl"></ul>
                 <ul id="noUserFoundUl"></ul>
             </div>

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('#findUsers').blur(function () {
+    $('#searchUser').click(function () {
         initUsernamefind('foundUserUl', 'noUserFoundUl', 'No user found with that Username');
     });
 });
@@ -8,27 +8,6 @@ var colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
     '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
-
-function initAddFriend() {
-    $.ajax({
-        type: "POST",
-        url: "/addFriend",
-        data: {
-            receiverUsername: $('#findUsers').val()
-        },
-        success: function (response) {
-            if (response.status != "SUCCESS") {
-                var foundUserArea = document.querySelector('#foundUserUl');
-                foundUserArea.style['background-color'] = '#ff5652';
-            } else {
-                foundUserArea.style['background-color'] = '#00ff04';
-            }
-        },
-        error: function (responseText) {
-            $('#' + 'foundUserUl').text(responseText);
-        }
-    });
-}
 
 function initUsernamefind(successUl, errorUl, errorMessage) {
     var userPrincipalText = $('#userPrincipal').text();
@@ -56,16 +35,20 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
             } else {
                 noUserFoundArea.classList.add('hidden');
                 var foundUserArea = document.querySelector('#foundUserUl');
+                var ulText = document.getElementById("foundUserUl").textContent;
+                if (ulText.includes(response.username)) {
+                    return false;
+                }
                 var usernameElement = document.createElement('span');
                 var usernameText = document.createTextNode(response.username);
                 usernameElement.appendChild(usernameText);
+                var space = document.createTextNode('\u00A0');
+                usernameElement.appendChild(space);
 
                 var friendButtonElement = document.createElement('button');
                 friendButtonElement.setAttribute("id", "addFriend");
-                friendButtonElement.setAttribute("class", "btn btn-success custom-width");
-                friendButtonElement.innerHTML = 'contact';
-                friendButtonElement.style['background-color'] = '#4CAF50';
-                friendButtonElement.style['margin'] = '1px 0.5px';
+                friendButtonElement.setAttribute("class", "btn btn-primary btn-sm");
+                friendButtonElement.innerHTML = 'Contact';
 
                 var action = "addFriend";
                 friendButtonElement.onclick = function () {
@@ -80,18 +63,26 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
                             var foundUserArea = document.querySelector('#foundUserUl');
                             if (response.status != "SUCCESS") {
                                 if (action === "addFriend") {
-                                    friendButtonElement.style['background-color'] = '#00ff04';
+                                    friendButtonElement.style['background-color'] = '#337ab7';
                                 } else {
                                     friendButtonElement.style['background-color'] = '#ff5652';
+                                    friendButtonElement.innerHTML = 'unFriend';
                                 }
                             } else {
                                 if (action === "addFriend") {
                                     action = "unFriend";
+                                    $('#exampleModalCenter').modal('show');
+                                    setTimeout(function () {
+                                        $('#exampleModalCenter').modal('hide');
+                                    }, 5000);
+
                                     friendButtonElement.style['background-color'] = '#ff5652';
+                                    friendButtonElement.innerHTML = 'unFriend';
 
                                 } else {
                                     action = "addFriend";
-                                    friendButtonElement.style['background-color'] = '#00ff04';
+                                    friendButtonElement.style['background-color'] = '#337ab7';
+                                    friendButtonElement.innerHTML = 'Contact';
                                 }
                             }
                         },
@@ -103,20 +94,12 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
                 };
                 usernameElement.appendChild(friendButtonElement);
                 foundUserArea.appendChild(usernameElement);
+                var linebreak = document.createElement("br");
+                foundUserArea.appendChild(linebreak);
             }
         },
         error: function (responseText) {
             $('#' + errorUl).text(responseText);
         }
     });
-}
-
-function getAvatarColor(messageSender) {
-    var hash = 0;
-    for (var i = 0; i < messageSender.length; i++) {
-        hash = 31 * hash + messageSender.charCodeAt(i);
-    }
-    var index = Math.abs(hash % colors.length);
-
-    return colors[index];
 }
