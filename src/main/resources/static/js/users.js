@@ -1,15 +1,33 @@
 $(document).ready(function () {
     $('#searchUser').click(function () {
-        initUsernamefind('foundUserUl', 'noUserFoundUl', 'No user found with that Username');
+        initUsernameFind('foundUserUl', 'noUserFoundUl');
     });
 });
 
-var colors = [
-    '#2196F3', '#32c787', '#00BCD4', '#ff5652',
-    '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
-];
 
-function initUsernamefind(successUl, errorUl, errorMessage) {
+function setElementStyle(htmlElement1, htmlElement2, attribute, attributeValue, textValue) {
+    htmlElement1.style[attribute] = attributeValue;
+    htmlElement1.style['text-align'] = 'center';
+    htmlElement2.innerHTML = textValue;
+}
+
+function adjustModal(frModalHeader, frModalText, unFriend) {
+    if (unFriend === true) {
+        setElementStyle(frModalHeader, frModalText, 'background-color', '#ff5652', 'You just sent unFriend request to that user');
+    } else {
+        setElementStyle(frModalHeader, frModalText, 'background-color', '#337ab7', 'You just sent friend request to that user, and waiting for response');
+    }
+
+}
+
+function processModal() {
+    $('#exampleModalCenter').modal('show');
+    setTimeout(function () {
+        $('#exampleModalCenter').modal('hide');
+    }, 5000);
+}
+
+function initUsernameFind(successUl, errorUl, errorMessage) {
     var userPrincipalText = $('#userPrincipal').text();
     var userPrincipal = userPrincipalText.substr(userPrincipalText.indexOf(' ') + 1, userPrincipalText.length);
     var userToFind = $('#findUsers').val();
@@ -30,8 +48,7 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
             if (username === undefined) {
                 $('#' + errorUl).text('');
                 var errorMessageText = document.createTextNode(errorMessage);
-                noUserFoundArea.style['background-color'] = '#ff5652';
-                noUserFoundArea.appendChild(errorMessageText);
+                setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', errorMessageText);
             } else {
                 noUserFoundArea.classList.add('hidden');
                 var foundUserArea = document.querySelector('#foundUserUl');
@@ -61,28 +78,25 @@ function initUsernamefind(successUl, errorUl, errorMessage) {
                         },
                         success: function (response) {
                             var foundUserArea = document.querySelector('#foundUserUl');
+                            var modalHeader = document.querySelector('#frModalHeader');
+                            var modalText = document.querySelector('#frModalText');
                             if (response.status != "SUCCESS") {
                                 if (action === "addFriend") {
-                                    friendButtonElement.style['background-color'] = '#337ab7';
+                                    setElementStyle(friendButtonElement, friendButtonElement, 'background-color', '#337ab7', 'Friend');
                                 } else {
-                                    friendButtonElement.style['background-color'] = '#ff5652';
-                                    friendButtonElement.innerHTML = 'unFriend';
+                                    setElementStyle(friendButtonElement, friendButtonElement, 'background-color', '#ff5652', 'UnFriend');
                                 }
                             } else {
                                 if (action === "addFriend") {
                                     action = "unFriend";
-                                    $('#exampleModalCenter').modal('show');
-                                    setTimeout(function () {
-                                        $('#exampleModalCenter').modal('hide');
-                                    }, 5000);
-
-                                    friendButtonElement.style['background-color'] = '#ff5652';
-                                    friendButtonElement.innerHTML = 'unFriend';
-
+                                    adjustModal(modalHeader, modalText, false);
+                                    processModal();
+                                    setElementStyle(friendButtonElement, friendButtonElement, 'background-color', '#ff5652', 'UnFriend');
                                 } else {
+                                    adjustModal(modalHeader, modalText, true);
+                                    processModal();
                                     action = "addFriend";
-                                    friendButtonElement.style['background-color'] = '#337ab7';
-                                    friendButtonElement.innerHTML = 'Contact';
+                                    setElementStyle(friendButtonElement, friendButtonElement, 'background-color', '#337ab7', 'Friend');
                                 }
                             }
                         },
