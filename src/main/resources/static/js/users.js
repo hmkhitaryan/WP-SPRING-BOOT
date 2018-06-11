@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('#searchUser').click(function () {
-        initUsernameFind('foundUserUl', 'noUserFoundUl');
+        initUsernameFind('noUserFoundUl');
     });
 });
 
@@ -27,13 +27,18 @@ function processModal() {
     }, 5000);
 }
 
-function initUsernameFind(successUl, errorUl, errorMessage) {
+function initUsernameFind(errorUl) {
     var userPrincipalText = $('#userPrincipal').text();
     var userPrincipal = userPrincipalText.substr(userPrincipalText.indexOf(' ') + 1, userPrincipalText.length);
     var userToFind = $('#findUsers').val();
     if (userPrincipal.trim() === userToFind) {
         $('#' + errorUl).text('');
         $('#' + errorUl).text('Can not find yourself');
+        return false;
+    }
+    var noUserFoundArea = document.querySelector('#noUserFoundUl');
+    if (!userToFind) {
+        setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', 'No user found with that username');
         return false;
     }
     $.ajax({
@@ -44,11 +49,9 @@ function initUsernameFind(successUl, errorUl, errorMessage) {
         },
         success: function (response) {
             var username = response.username;
-            var noUserFoundArea = document.querySelector('#noUserFoundUl');
             if (username === undefined) {
                 $('#' + errorUl).text('');
-                var errorMessageText = document.createTextNode(errorMessage);
-                setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', errorMessageText);
+                setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', 'No user found with that username');
             } else {
                 noUserFoundArea.classList.add('hidden');
                 var foundUserArea = document.querySelector('#foundUserUl');

@@ -77,4 +77,6 @@ public interface UserService {
 	 * @param token token to be validated
 	 */
     String validateVerificationToken(String token);
+
+    int number = 0;
 }

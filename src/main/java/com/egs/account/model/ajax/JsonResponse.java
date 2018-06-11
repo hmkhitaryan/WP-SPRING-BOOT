@@ -24,4 +24,12 @@ public class JsonResponse {
     public void setMessage(String message) {
         this.message = message;
 	}
+
+    public JsonResponse() {
+    }
+
+    public JsonResponse(String status, String message) {
+        this.status = status;
+        this.message = message;
+    }
 }

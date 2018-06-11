@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller
@@ -42,8 +44,19 @@ public class FriendshipController {
 
     @RequestMapping(value = UrlMapping.ADD_FRIEND, method = RequestMethod.POST)
     public @ResponseBody
-    JsonResponse addFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername) {
+    JsonResponse addFriend(@RequestParam(RECEIVER_USERNAME) String receiverUsername, HttpServletRequest request, HttpServletResponse response) {
         final String initiatorUsername = utilsService.getUserPrincipalName(context);
+        if ("".equals(initiatorUsername)) {
+            LOGGER.warn("your session is expired, redirecting to login page");
+            try {
+                final String contextPath = request.getContextPath();
+                response.sendRedirect("http://localhost:8001/login");
+//                response.sendRedirect(contextPath + "/login");
+                return new JsonResponse("FAILED", "Your session is expired, go to login page");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         final User initiatorUser = userService.findByUsername(initiatorUsername);
         Optional<Friendship> friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
 

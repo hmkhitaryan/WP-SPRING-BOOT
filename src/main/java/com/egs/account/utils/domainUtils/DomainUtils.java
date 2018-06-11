@@ -176,8 +176,8 @@ public class DomainUtils {
     public String getUserPrincipalName(HttpServletRequest request) {
         return Optional.of(request)
                 .map(HttpServletRequest::getUserPrincipal)
-                .map(java.security.Principal::getName)
-                .orElseThrow(IllegalStateException::new);
+                .map(java.security.Principal::getName).orElse("");
+//                .orElseThrow(IllegalStateException::new);
     }
 
     /**
