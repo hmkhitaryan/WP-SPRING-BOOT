@@ -51,7 +51,7 @@ public class FriendshipController {
             try {
                 final String contextPath = request.getContextPath();
                 response.sendRedirect("http://localhost:8001/login");
-//                response.sendRedirect(contextPath + "/login");
+                //TODO implement proper way of finding context path when the session is expired
                 return new JsonResponse("FAILED", "Your session is expired, go to login page");
             } catch (IOException e) {
                 e.printStackTrace();
