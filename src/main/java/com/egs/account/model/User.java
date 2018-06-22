@@ -42,6 +42,9 @@ public class User {
     @JsonIgnore
     private Set<Catalog> catalogs;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Notification> notifications;
+
     public VerificationToken getToken() {
         return token;
     }
@@ -52,6 +55,11 @@ public class User {
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private VerificationToken token;
+
+    public User(String username, Set<Role> roles) {
+        this.username = username;
+        this.roles = roles;
+    }
 
     public User() {
         super();
@@ -152,6 +160,14 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Set<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Set<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     @Override

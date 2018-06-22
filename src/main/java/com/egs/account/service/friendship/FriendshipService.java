@@ -6,6 +6,7 @@ import com.egs.account.model.chat.Friendship;
 import java.util.Optional;
 
 public interface FriendshipService {
+
     Friendship save(Friendship friendship);
 
     Friendship findByReceiver(User receiverUser);

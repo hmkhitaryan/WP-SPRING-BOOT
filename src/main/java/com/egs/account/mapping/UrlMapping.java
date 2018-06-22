@@ -21,9 +21,9 @@ public class UrlMapping {
 
     public final static String CHAT = "/chat";
 
-	public final static String EDIT_USER = "/edit/user";
+	public final static String EDIT_USER = "/edit/com.egs.account.user";
 
-	public static final String DELETE_USER = "/delete/user";
+	public static final String DELETE_USER = "/delete/com.egs.account.user";
 
 	public static final String ADD_DOCUMENT = "/add/document";
 
@@ -35,11 +35,11 @@ public class UrlMapping {
 
 	public static final String CHECK_EMAIL = "checkEmail";
 
-    public static final String CHECK_EMAIL_EDIT = "edit/user/checkEmail";
+	public static final String CHECK_EMAIL_EDIT = "edit/com.egs.account.user/checkEmail";
 
     public static final String CHECK_PASSWORD = "checkPassword";
 
-    public static final String CHECK_PASSWORD_EDIT = "edit/user/checkPassword";
+	public static final String CHECK_PASSWORD_EDIT = "edit/com.egs.account.user/checkPassword";
 
     public static final String CHECK_PASSWORD_CONFIRM = "checkPasswordConfirm";
 
@@ -68,8 +68,10 @@ public class UrlMapping {
 
     public static final String EMAIL_ERROR_VIEW = "error/emailError";
 
-    public static final String ADD_FRIEND = "addFriend";
+	public static final String ADD_FRIEND = "sendFriendRequest";
 
     public static final String UN_FRIEND = "unFriend";
+
+	public static final String CONFIRM_FRIEND = "confirmFriend";
 
 }

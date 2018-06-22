@@ -5,9 +5,11 @@ import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
+import com.egs.account.model.Notification;
 import com.egs.account.model.User;
 import com.egs.account.model.ajax.JsonUser;
 import com.egs.account.service.catalog.CatalogService;
+import com.egs.account.service.notification.NotificationService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
 import com.egs.account.service.validator.ValidationService;
@@ -61,6 +63,10 @@ public class UserController {
 
     private static final String CAN_NOT_FIND_YOURSELF = "can not find yourself";
 
+    private static final String NEW_NOTIFICATIONS = "newNotifications";
+
+    private static final String NEW_NOTE_SIZE = "newNoteSize";
+
     @Autowired
     MessageSource messageSource;
 
@@ -83,6 +89,9 @@ public class UserController {
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -114,8 +123,12 @@ public class UserController {
         final String username = utilsService.getUserPrincipalName(context);
         final User userForm = userService.findByUsername(username);
         model.addAttribute(UIAttribute.USER_FORM, userForm);
-        final List<Catalog> catalogs = catalogService.findAllByUserId(userForm.getId());
+        final Long userId = userForm.getId();
+        final List<Catalog> catalogs = catalogService.findAllByUserId(userId);
         final List<String> links = utilsService.getImageLinks(catalogs);
+        final List<Notification> newNotifications = notificationService.findAllByUserIdNotSeen(userId);
+        model.addAttribute(NEW_NOTIFICATIONS, newNotifications);
+        model.addAttribute(NEW_NOTE_SIZE, newNotifications.size());
         model.addAttribute(BUCKET_LINKS, links);
         model.addAttribute(DOC_SIZE, links.size());
 

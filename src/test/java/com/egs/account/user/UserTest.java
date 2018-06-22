@@ -1,4 +1,4 @@
-package user;
+package com.egs.account.user;
 
 import com.egs.account.model.Role;
 import com.egs.account.model.User;
