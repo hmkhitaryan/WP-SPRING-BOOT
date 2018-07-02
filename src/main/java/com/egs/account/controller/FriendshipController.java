@@ -1,10 +1,10 @@
 package com.egs.account.controller;
 
 import com.egs.account.mapping.UrlMapping;
-import com.egs.account.model.Notification;
 import com.egs.account.model.User;
 import com.egs.account.model.ajax.JsonResponse;
 import com.egs.account.model.chat.Friendship;
+import com.egs.account.model.chat.Notification;
 import com.egs.account.service.friendship.FriendshipService;
 import com.egs.account.service.notification.NotificationService;
 import com.egs.account.service.user.UserService;
@@ -26,14 +26,14 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Controller
-public class FriendshipController {
+public class FriendshipController extends BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(FriendshipController.class);
 
     private static final String RECEIVER_USERNAME = "receiverUsername";
 
-    private static final String SENDER_USERNAME = "senderUsername";
-
     private static final String NOTE_ID = "noteId";
+
+    private static final String NOTIFICATION_DELETED = "Notification deleted";
 
     @Autowired
     private UserService userService;
@@ -71,36 +71,35 @@ public class FriendshipController {
         final User receiverUser = userService.findByUsername(receiverUsername);
 
         return sendFriendshipRequest(initiatorUser, receiverUser);
-//        return doFriendship(receiverUsername, initiatorUser, friendship);
     }
 
-    @RequestMapping(value = UrlMapping.CONFIRM_FRIEND, method = RequestMethod.POST)
+    @RequestMapping(value = {UrlMapping.CONFIRM_FRIEND}, method = RequestMethod.POST)
     public @ResponseBody
-    JsonResponse confirmFriendRequest(@RequestParam(SENDER_USERNAME) String senderUsername, @RequestParam(NOTE_ID) Long noteId, HttpServletResponse response) {
-        if (expiredSession(response, senderUsername)) {
-            return new JsonResponse("FAILED", "Your session is expired, go to login page");
+    JsonResponse confirmFriendRequest(@RequestParam(NOTE_ID) Long noteId, HttpServletResponse response) {
+        final String receiverUsername = utilsService.getUserPrincipalName(context);
+        if (expiredSession(response, receiverUsername)) {
+            return new JsonResponse(FAIL, "Your session is expired, go to login page");
         }
-        final User initiatorUser = userService.findByUsername(senderUsername);
+        final User receiverUser = userService.findByUsername(receiverUsername);
         final Optional<Notification> notification = notificationService.findById(noteId);
         if (notification.isPresent()) {
             final Notification note = notification.get();
             note.setSeen(true);
             notificationService.save(note);
-            final Friendship friendship = new Friendship(initiatorUser, note.getUser());
+            final Friendship friendship = new Friendship(note.getInitiator(), receiverUser);
             friendshipService.save(friendship);
-            return new JsonResponse("OK", "Congratulations!!! you are already friends");
+            return new JsonResponse(SUCCESS, "Congratulations!!! you are already friends");
         } else {
-            return new JsonResponse("FAIL", "Notification with that id not found");
+            return new JsonResponse(FAIL, "Notification with that id not found");
         }
     }
 
     private JsonResponse sendFriendshipRequest(User initiatorUser, User receiverUser) {
-        final Friendship friendship = new Friendship(initiatorUser, receiverUser);
-        friendshipService.save(friendship);
-        final Notification notification = new Notification(receiverUser, "Friend request");
+        friendshipService.save(new Friendship(initiatorUser, receiverUser));
+        final Notification notification = new Notification(initiatorUser, receiverUser, "Friend request");
         notificationService.save(notification);
 
-        return new JsonResponse("OK", "Your request for adding friend is sent");
+        return new JsonResponse(SUCCESS, "Your request for adding friend is sent");
     }
 
     private boolean expiredSession(HttpServletResponse response, String initiatorUsername) {
@@ -132,5 +131,13 @@ public class FriendshipController {
         friendshipService.delete(friendship);
 
         return userValidator.processValidate(failed, message);
+    }
+
+    @RequestMapping(value = UrlMapping.IGNORE_FRIEND, method = RequestMethod.POST)
+    public @ResponseBody
+    JsonResponse ignoreFriendRequest(@RequestParam(NOTE_ID) Long noteId) {
+        notificationService.delete(noteId);
+
+        return new JsonResponse(SUCCESS, NOTIFICATION_DELETED);
     }
 }

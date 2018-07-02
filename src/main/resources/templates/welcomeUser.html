@@ -18,6 +18,7 @@
     <script type="text/javascript" th:src="@{/js/users.js/}"></script>
 </head>
 <body>
+
 <!-- Modal -->
 <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -43,32 +44,29 @@
             </form>
             <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}" id="userPrincipal"></h2>
 
-            <!--<div th:if="${newNoteSize != 0}" th:each="note,iter : ${newNotifications}" class="modal-content">-->
-
             <div class="tablecontainer">
                 <table class="table table-hover">
-                    <div th:if="${newNoteSize != 0}">
-                        <thead>
-                        <tr>
-                            <th th:text="#{notification.text}"></th>
-                            <th th:text="#{username.label}"></th>
-                            <th th:text="#{firstName.label}"></th>
-                            <th th:text="#{lastName.label}"></th>
-                            <th width="100"></th>
-                            <th width="100"></th>
-                        </tr>
-                        </thead>
+                    <div th:if="${newNoteSize != 0}" id="notificationDiv">
+                        <thead th:text="#{notification.text}"></thead>
                         <div>
                             <tbody>
-                            <div th:each="note : ${newNotifications}">
+                            <div th:each="note : ${newNotifications}" class="alert alert-info">
                                 <tr>
                                     <td th:text="${note.comment}"></td>
-                                    <td th:text="${note.user.username}"></td>
-                                    <td th:text="${note.user.firstName}"></td>
-                                    <td th:text="${note.user.lastName}"></td>
+                                    <td th:text="${note.initiator.username}"></td>
+                                    <td th:text="${note.initiator.firstName}"></td>
+                                    <td th:text="${note.initiator.lastName}"></td>
 
-                                    <td><a th:href="@{'/confirmFriend/' + ${note.id}}" class="btn btn-success custom-width"
-                                           th:text="#{button.download.label}"></a></td>
+                                    <td>
+                                        <button th:data-id="${note.id}" class="btn btn-success custom-width" id="confirmFriendButton"
+                                                th:text="#{button.addFriend.text}"></button>
+                                    </td>
+                                    <ul id="confirmError"></ul>
+
+                                    <td>
+                                        <button th:data-id="${note.id}" class="btn btn-danger custom-width" id="ignoreFriendButton"
+                                                th:text="#{button.ignore.text}"></button>
+                                    </td>
 
                                 </tr>
                             </div>
@@ -111,9 +109,10 @@
                         <td><span th:text="${userForm.email}"></span></td>
                         <td><span th:text="${userForm.dateRegistered}"></span></td>
                         <td><span th:text="${userForm.skypeID}"></span></td>
-                        <td><a th:href="@{'edit/com.egs.account.user/' + ${userForm.id}}" class="btn btn-success custom-width"
+
+                        <td><a th:href="@{'edit/user/' + ${userForm.id}}" class="btn btn-success custom-width"
                                th:text="#{button.edit.label}"></a></td>
-                        <td><a th:href="@{'delete/com.egs.account.user/' + ${userForm.id}}" class="btn btn-danger custom-width"
+                        <td><a th:href="@{'delete/user/' + ${userForm.id}}" class="btn btn-danger custom-width"
                                th:text="#{button.delete.label}"></a></td>
                     </tr>
                     </tbody>

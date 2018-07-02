@@ -42,8 +42,8 @@ public class User {
     @JsonIgnore
     private Set<Catalog> catalogs;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Notification> notifications;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Set<Notification> notifications;
 
     public VerificationToken getToken() {
         return token;
@@ -162,13 +162,13 @@ public class User {
         this.enabled = enabled;
     }
 
-    public Set<Notification> getNotifications() {
-        return notifications;
-    }
-
-    public void setNotifications(Set<Notification> notifications) {
-        this.notifications = notifications;
-    }
+//    public Set<Notification> getNotifications() {
+//        return notifications;
+//    }
+//
+//    public void setNotifications(Set<Notification> notifications) {
+//        this.notifications = notifications;
+//    }
 
     @Override
     public int hashCode() {

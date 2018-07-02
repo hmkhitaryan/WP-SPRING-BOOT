@@ -1,6 +1,5 @@
 package com.egs.account.service.friendship;
 
-import com.egs.account.exception.FriendshipNotFoundException;
 import com.egs.account.model.User;
 import com.egs.account.model.chat.Friendship;
 import com.egs.account.repository.friendship.FriendshipRepository;
@@ -18,7 +17,16 @@ public class FriendshipServiceImpl implements FriendshipService {
     FriendshipRepository friendshipRepository;
 
     public Friendship save(Friendship friendship) {
-        return friendshipRepository.save(friendship);
+        final User initiatorUser = friendship.getInitiator();
+        final User receiverUser = friendship.getReceiver();
+        final Optional<Friendship> frAlreadySaved = Optional.ofNullable(
+                friendshipRepository.findByInitiatorAndReceiver(initiatorUser.getId(), receiverUser.getId()));
+
+        if (!frAlreadySaved.isPresent()) {
+            final Friendship friendshipToSave = new Friendship(initiatorUser, receiverUser);
+            return friendshipRepository.save(friendshipToSave);
+        }
+        return frAlreadySaved.get();
     }
 
     @Override
@@ -33,22 +41,16 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public Optional<Friendship> findByInitiatorOrReceiver(User user) {
-        Optional<Friendship> friendship = Optional.ofNullable(friendshipRepository.findByInitiator(user));
-        if (!friendship.isPresent()) {
-            friendship = Optional.ofNullable(friendshipRepository.findByReceiver(user));
-        }
-        try {
-            friendship.orElseThrow(() -> new FriendshipNotFoundException("No friendship found with this user"));
-        } catch (final FriendshipNotFoundException e) {
-            return Optional.empty();
-        }
-
-
-        return friendship;
+        return Optional.ofNullable(friendshipRepository.findByInitiatorOrReceiver(user.getId()));
     }
 
     @Override
     public void delete(Friendship friendship) {
         friendshipRepository.delete(friendship);
+    }
+
+    @Override
+    public Optional<Friendship> findByInitiatorAndReceiver(Long initiatorId, Long receiverId) {
+        return Optional.ofNullable(friendshipRepository.findByInitiatorAndReceiver(initiatorId, receiverId));
     }
 }

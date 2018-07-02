@@ -2,11 +2,12 @@ package com.egs.account.model.ajax;
 
 import java.util.Objects;
 
-public class JsonUser {
+public class JsonUser extends AbstractResponse {
     private String username;
     private String firstName;
     private String lastName;
     private String email;
+    private boolean isFriend;
 
     public String getUsername() {
         return username;
@@ -38,6 +39,14 @@ public class JsonUser {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isFriend() {
+        return isFriend;
+    }
+
+    public void setFriend(boolean friend) {
+        isFriend = friend;
     }
 
     public JsonUser() {

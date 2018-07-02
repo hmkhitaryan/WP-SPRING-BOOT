@@ -1,14 +1,16 @@
 package com.egs.account.controller;
 
 import com.egs.account.event.OnRegistrationCompleteEvent;
-import com.egs.account.exception.UserNotFoundException;
 import com.egs.account.mapping.UIAttribute;
 import com.egs.account.mapping.UrlMapping;
 import com.egs.account.model.Catalog;
-import com.egs.account.model.Notification;
 import com.egs.account.model.User;
-import com.egs.account.model.ajax.JsonUser;
+import com.egs.account.model.ajax.AbstractResponse;
+import com.egs.account.model.ajax.JsonResponse;
+import com.egs.account.model.chat.Friendship;
+import com.egs.account.model.chat.Notification;
 import com.egs.account.service.catalog.CatalogService;
+import com.egs.account.service.friendship.FriendshipService;
 import com.egs.account.service.notification.NotificationService;
 import com.egs.account.service.security.SecurityService;
 import com.egs.account.service.user.UserService;
@@ -31,13 +33,14 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * @author Hayk_Mkhitaryan
  */
 
 @Controller
-public class UserController {
+public class UserController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
@@ -88,10 +91,14 @@ public class UserController {
     private CatalogService catalogService;
 
     @Autowired
+    private
     ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private FriendshipService friendshipService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -217,16 +224,23 @@ public class UserController {
 
     @RequestMapping(value = "/findUser", method = RequestMethod.POST)
     public @ResponseBody
-    JsonUser findUserByUsername(@RequestParam("username") String username) {
-        User userFound = userService.findByUsername(username);
+    AbstractResponse findUserByUsername(@RequestParam("username") String username) {
+        final User userFound = userService.findByUsername(username);
         if (userFound == null) {
-            throw new UserNotFoundException(NO_USER_FOUND_WITH_SPECIFIED_USERNAME);
+            return new JsonResponse(FAIL, NO_USER_FOUND_WITH_SPECIFIED_USERNAME);
         }
-        if (username.equalsIgnoreCase(utilsService.getUserPrincipalName(context))) {
+        final String initiatorUsername = utilsService.getUserPrincipalName(context);
+        if (username.equalsIgnoreCase(initiatorUsername)) {
             throw new IllegalStateException(CAN_NOT_FIND_YOURSELF);
         }
+        final User initiatorUser = userService.findByUsername(initiatorUsername);
+        final Optional<Friendship> friendship = friendshipService.findByInitiatorAndReceiver(initiatorUser.getId(), userFound.getId());
+        boolean isFriend = false;
+        if (friendship.isPresent()) {
+            isFriend = true;
+        }
 
-        return UserToJsonUserConverter.toJsonUser(userFound);
+        return UserToJsonUserConverter.toJsonUser(userFound, isFriend);
     }
 
     private String getAppUrl(HttpServletRequest request) {

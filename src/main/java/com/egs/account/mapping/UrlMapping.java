@@ -74,4 +74,6 @@ public class UrlMapping {
 
 	public static final String CONFIRM_FRIEND = "confirmFriend";
 
+    public static final String IGNORE_FRIEND = "ignoreFriend";
+
 }

@@ -1,6 +1,6 @@
 package com.egs.account.service.notification;
 
-import com.egs.account.model.Notification;
+import com.egs.account.model.chat.Notification;
 import com.egs.account.repository.notification.NotificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class NotificationServiceImpl implements NotificationService {
     private NotificationRepo notificationRepo;
 
     @Override
-    public void save(Notification notification) {
-        notificationRepo.save(notification);
+    public Notification save(Notification notification) {
+        return notificationRepo.save(notification);
     }
 
     @Override
@@ -35,5 +35,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Optional<Notification> findById(Long noteId) {
         return notificationRepo.findById(noteId);
+    }
+
+    @Override
+    public void delete(Long noteId) {
+        notificationRepo.deleteById(noteId);
     }
 }

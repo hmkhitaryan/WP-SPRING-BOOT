@@ -16,4 +16,6 @@ public interface FriendshipService {
     Optional<Friendship> findByInitiatorOrReceiver(User user);
 
     void delete(Friendship friendship);
+
+    Optional<Friendship> findByInitiatorAndReceiver(Long initiatorId, Long receiverId);
 }

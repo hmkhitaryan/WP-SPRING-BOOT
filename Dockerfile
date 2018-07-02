@@ -1,0 +1,3 @@
+FROM java:8
+VOLUME /tmp
+EXPOSE 8080

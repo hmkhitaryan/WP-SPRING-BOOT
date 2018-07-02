@@ -3,19 +3,19 @@ package com.egs.account.model.ajax;
 /**
  * @author Hayk_Mkhitaryan
  */
-public class JsonResponse {
+public class JsonResponse extends AbstractResponse {
 
-	private String status;
+    private String status;
 
     private String message;
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getMessage() {
         return message;
@@ -23,7 +23,7 @@ public class JsonResponse {
 
     public void setMessage(String message) {
         this.message = message;
-	}
+    }
 
     public JsonResponse() {
     }
