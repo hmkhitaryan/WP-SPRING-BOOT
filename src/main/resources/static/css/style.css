@@ -18,3 +18,49 @@ label {
     float: right;
     margin-right: 10px;
 }
+
+/*#note {*/
+/*position: absolute;*/
+/*z-index: 101;*/
+/*top: 0;*/
+/*left: 0;*/
+/*right: 0;*/
+/*!*background: #fde073;*!*/
+/*text-align: center;*/
+/*line-height: 2.5;*/
+/*overflow: hidden;*/
+/*-webkit-box-shadow: 0 0 5px black;*/
+/*-moz-box-shadow:    0 0 5px black;*/
+/*box-shadow:         0 0 5px black;*/
+/*}*/
+
+/*.chat-message {*/
+/*padding-left: 68px;*/
+/*position: relative;*/
+/*}*/
+
+.chat-message i {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    overflow: hidden;
+    left: 10px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    line-height: 42px;
+    color: #fff;
+    text-align: center;
+    border-radius: 50%;
+    font-style: normal;
+    text-transform: uppercase;
+}
+
+/*.chat-message span {*/
+/*color: #333;*/
+/*font-weight: 600;*/
+/*}*/
+
+/*.chat-message p {*/
+/*color: #43464b;*/
+/*}*/

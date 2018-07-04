@@ -35,6 +35,8 @@ public class FriendshipController extends BaseController {
 
     private static final String NOTIFICATION_DELETED = "Notification deleted";
 
+    private static final String YOU_ARE_ALREADY_FRIENDS_MESSAGE = "You are already friends";
+
     @Autowired
     private UserService userService;
 
@@ -66,11 +68,11 @@ public class FriendshipController extends BaseController {
         final User initiatorUser = userService.findByUsername(initiatorUsername);
         Optional<Friendship> friendship = friendshipService.findByInitiatorOrReceiver(initiatorUser);
         if (friendship.isPresent()) {
-            return new JsonResponse("FAIL", "You are already friends");
+            return new JsonResponse("FAIL", YOU_ARE_ALREADY_FRIENDS_MESSAGE);
         }
         final User receiverUser = userService.findByUsername(receiverUsername);
 
-        return sendFriendshipRequest(initiatorUser, receiverUser);
+        return sendNotificationForFriendship(initiatorUser, receiverUser);
     }
 
     @RequestMapping(value = {UrlMapping.CONFIRM_FRIEND}, method = RequestMethod.POST)
@@ -92,29 +94,6 @@ public class FriendshipController extends BaseController {
         } else {
             return new JsonResponse(FAIL, "Notification with that id not found");
         }
-    }
-
-    private JsonResponse sendFriendshipRequest(User initiatorUser, User receiverUser) {
-        friendshipService.save(new Friendship(initiatorUser, receiverUser));
-        final Notification notification = new Notification(initiatorUser, receiverUser, "Friend request");
-        notificationService.save(notification);
-
-        return new JsonResponse(SUCCESS, "Your request for adding friend is sent");
-    }
-
-    private boolean expiredSession(HttpServletResponse response, String initiatorUsername) {
-        if ("".equals(initiatorUsername)) {
-            LOGGER.warn("your session is expired, redirecting to login page");
-            try {
-                final String contextPath = servletContext.getContextPath();
-                response.sendRedirect(contextPath + "/login");
-                //TODO implement proper way of finding context path when the session is expired
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
     @RequestMapping(value = UrlMapping.UN_FRIEND, method = RequestMethod.POST)
@@ -139,5 +118,28 @@ public class FriendshipController extends BaseController {
         notificationService.delete(noteId);
 
         return new JsonResponse(SUCCESS, NOTIFICATION_DELETED);
+    }
+
+    private JsonResponse sendNotificationForFriendship(User initiatorUser, User receiverUser) {
+        final Notification notification = new Notification(initiatorUser, receiverUser, "Friend request");
+        notificationService.save(notification);
+        notificationService.notify(notification, receiverUser.getUsername());
+
+        return new JsonResponse(SUCCESS, "Your request for adding friend is sent");
+    }
+
+    private boolean expiredSession(HttpServletResponse response, String initiatorUsername) {
+        if ("".equals(initiatorUsername)) {
+            LOGGER.warn("your session is expired, redirecting to login page");
+            try {
+                final String contextPath = servletContext.getContextPath();
+                response.sendRedirect(contextPath + "/login");
+                //TODO implement proper way of finding context path when the session is expired
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

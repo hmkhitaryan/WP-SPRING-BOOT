@@ -25,7 +25,7 @@ function initProcessingFriendRequest(noteId, errorDiv, url) {
                 $('#' + errorDiv).show('slow');
             } else {
                 $('#' + errorDiv).html("");
-                $('#notificationDiv').html("");
+                $('#noteRow' + noteId).addClass('hidden');
             }
         },
         error: function (responseText) {
@@ -69,14 +69,14 @@ function initUsernameFind(errorUl) {
     var userPrincipalText = $('#userPrincipal').text();
     var userPrincipal = userPrincipalText.substr(userPrincipalText.indexOf(' ') + 1, userPrincipalText.length);
     var userToFind = $('#findUsers').val();
+    var noUserFoundArea = document.querySelector('#noUserFoundUl');
     if (userPrincipal.trim() === userToFind) {
-        $('#' + errorUl).text('');
-        $('#' + errorUl).text('Can not find yourself !!!!');
+        setElementStyle(noUserFoundArea, noUserFoundArea, 'color', '#ff5652', 'Can not find yourself !!!!');
         return false;
     }
-    var noUserFoundArea = document.querySelector('#noUserFoundUl');
+
     if (!userToFind) {
-        setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', 'No user found with that username');
+        setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', 'Please enter a username');
         return false;
     }
     $.ajax({
@@ -92,22 +92,20 @@ function initUsernameFind(errorUl) {
             var foundUserArea = document.querySelector('#foundUserUl');
             var usernameText = document.createTextNode(response.username);
             usernameElement.appendChild(usernameText);
-            var space = document.createTextNode('\u00A0');
-            usernameElement.appendChild(space);
+            addSpace(usernameElement, 1);
+            var action = "addFriend";
             if (username === undefined) {
                 $('#' + errorUl).text('');
                 setElementStyle(noUserFoundArea, noUserFoundArea, 'color', 'red', 'No user found with that username');
-            } else if (response.friend) {
-                friendButtonElement = getFriendButton(true);
-                setElementStyle(friendButtonElement, friendButtonElement, 'background-color', '#ff5652', 'UnFriend');
             } else {
                 noUserFoundArea.classList.add('hidden');
                 var ulText = document.getElementById("foundUserUl").textContent;
                 if (ulText.includes(response.username)) {
                     return false;
                 }
-                friendButtonElement = getFriendButton(false);
-                var action = "addFriend";
+                var isFriend = response.friend;
+                friendButtonElement = getFriendButton(!!isFriend);
+                setElementStyle(friendButtonElement, friendButtonElement, 'background-color', (isFriend ? '#ff5652' : '#337ab7'), (isFriend ? 'UnFriend' : 'Friend'));
                 friendButtonElement.onclick = function () {
                     var url = action === 'addFriend' ? '/sendFriendRequest' : 'unFriend';
                     $.ajax({
@@ -152,13 +150,41 @@ function initUsernameFind(errorUl) {
             }
 
             usernameElement.appendChild(friendButtonElement);
+            var messageElement = makeChatView(response.username[0], '#337ab7');
+            foundUserArea.appendChild(messageElement);
+            addSpace(foundUserArea, 4);
             foundUserArea.appendChild(usernameElement);
-            var linebreak = document.createElement("br");
-            foundUserArea.appendChild(linebreak);
-
+            addLineBreak(foundUserArea, 1);
         },
         error: function (responseText) {
             $('#' + errorUl).text(responseText);
         }
     });
+}
+
+function addLineBreak(element, number) {
+    for (var i = 0; i < number; i++) {
+        var linebreak = document.createElement("br");
+        element.appendChild(linebreak);
+    }
+}
+
+function addSpace(element, number) {
+    for (var i = 0; i < number; i++) {
+        var space = document.createTextNode('\u00A0');
+        element.appendChild(space);
+    }
+}
+
+function makeChatView(avatarLetter, color) {
+    var messageElement = document.createElement('li');
+    messageElement.classList.add('chat-message');
+    var avatarElement = document.createElement('i');
+    var avatarText = document.createTextNode(avatarLetter);
+    avatarElement.appendChild(avatarText);
+    avatarElement.style['background-color'] = color;
+
+    messageElement.appendChild(avatarElement);
+
+    return messageElement;
 }

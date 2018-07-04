@@ -3,6 +3,7 @@ package com.egs.account.service.notification;
 import com.egs.account.model.chat.Notification;
 import com.egs.account.repository.notification.NotificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationRepo notificationRepo;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Override
     public Notification save(Notification notification) {
@@ -40,5 +44,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void delete(Long noteId) {
         notificationRepo.deleteById(noteId);
+    }
+
+    @Override
+    public void notify(Notification notification, String username) {
+        messagingTemplate.convertAndSendToUser(
+                username,
+                "/topic/notify",
+                notification
+        );
     }
 }

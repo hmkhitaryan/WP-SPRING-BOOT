@@ -18,4 +18,6 @@ public interface NotificationService {
     Optional<Notification> findById(Long noteId);
 
     void delete(Long noteId);
+
+    void notify(Notification notification, String username);
 }

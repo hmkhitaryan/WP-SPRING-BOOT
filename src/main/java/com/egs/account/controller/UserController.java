@@ -129,6 +129,10 @@ public class UserController extends BaseController {
     public String welcome(Model model) {
         final String username = utilsService.getUserPrincipalName(context);
         final User userForm = userService.findByUsername(username);
+        if (userForm == null) {
+            LOGGER.error("No saved user, or has been deleted. redirecting to register page");
+            return UrlMapping.REGISTRATION_VIEW;
+        }
         model.addAttribute(UIAttribute.USER_FORM, userForm);
         final Long userId = userForm.getId();
         final List<Catalog> catalogs = catalogService.findAllByUserId(userId);

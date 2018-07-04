@@ -10,6 +10,8 @@
     <a href="/chat" th:text="#{document.tochat.text}" style="padding-right:50px" class="pull-right"></a>
     <title>Welcome Page</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css/}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css/}"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -47,11 +49,12 @@
             <div class="tablecontainer">
                 <table class="table table-hover">
                     <div th:if="${newNoteSize != 0}" id="notificationDiv">
-                        <thead th:text="#{notification.text}"></thead>
+                        <span th:text="#{notification.text}"></span> <span class="w3-badge w3-green" th:text="${newNoteSize}"></span>
+                        <thead></thead>
                         <div>
                             <tbody>
-                            <div th:each="note : ${newNotifications}" class="alert alert-info">
-                                <tr>
+                            <div th:each="note : ${newNotifications}">
+                                <tr th:id="'noteRow' + ${note.id}" class="alert alert-info">
                                     <td th:text="${note.comment}"></td>
                                     <td th:text="${note.initiator.username}"></td>
                                     <td th:text="${note.initiator.firstName}"></td>
@@ -76,15 +79,14 @@
                 </table>
             </div>
 
-            <div class="pull-right">
-                <tr>
-                    <td>
-                        <input type="text" class="form-control" name="findUsers" id="findUsers" th:placeholder="#{user.find.label}" autofocus="autofocus">
-                        <input type="button" id="searchUser" value="Find"/>
-                    </td>
-                </tr>
+            <div class="pull-left">
 
-                <ul id="foundUserUl"></ul>
+                <span><input type="text" class="form-control" name="findUsers" id="findUsers" th:placeholder="#{user.find.label}" autofocus="autofocus">
+                <button type="button" id="searchUser">Find</button></span>
+
+
+                <br>
+                <ul id="foundUserUl" class="input-group"></ul>
                 <ul id="noUserFoundUl"></ul>
             </div>
             <div class="tablecontainer">
