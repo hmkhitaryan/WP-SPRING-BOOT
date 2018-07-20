@@ -12,12 +12,6 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css/}"/>
     <link rel="stylesheet" th:href="@{/css/style.css/}"/>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" th:src="@{/js/bootstrap.min.js/}"></script>
-    <script type="text/javascript" th:src="@{/js/users.js/}"></script>
 </head>
 <body>
 
@@ -46,47 +40,46 @@
             </form>
             <h2 th:text="#{account.welcome.label} + ' ' + ${userForm.username}" id="userPrincipal"></h2>
 
-            <div class="tablecontainer">
-                <table class="table table-hover">
-                    <div th:if="${newNoteSize != 0}" id="notificationDiv">
-                        <span th:text="#{notification.text}"></span> <span class="w3-badge w3-green" th:text="${newNoteSize}"></span>
-                        <thead></thead>
-                        <div>
-                            <tbody>
-                            <div th:each="note : ${newNotifications}">
-                                <tr th:id="'noteRow' + ${note.id}" class="alert alert-info">
-                                    <td th:text="${note.comment}"></td>
-                                    <td th:text="${note.initiator.username}"></td>
-                                    <td th:text="${note.initiator.firstName}"></td>
-                                    <td th:text="${note.initiator.lastName}"></td>
+            <!--<div class="tablecontainer">-->
+            <!--<table class="table table-hover">-->
+            <div id="notifications-area">
+                <!--<span th:text="#{notification.text}"></span> <span class="w3-badge w3-green" th:text="${newNoteSize}"></span>-->
+                <!--<thead></thead>-->
+                <!--<div>-->
+                <!--<tbody>-->
+                <!--<div th:each="note : ${newNotifications}">-->
+                <!--<tr th:id="'noteRow' + ${note.id}" class="alert alert-info">-->
+                <!--<td th:text="${note.comment}"></td>-->
+                <!--<td th:text="${note.initiator.username}"></td>-->
+                <!--<td th:text="${note.initiator.firstName}"></td>-->
+                <!--<td th:text="${note.initiator.lastName}"></td>-->
 
-                                    <td>
-                                        <button th:data-id="${note.id}" class="btn btn-success custom-width" id="confirmFriendButton"
-                                                th:text="#{button.addFriend.text}"></button>
-                                    </td>
-                                    <ul id="confirmError"></ul>
+                <!--<td>-->
+                <!--<button th:data-id="${note.id}" class="btn btn-success custom-width" id="confirmFriendButton"-->
+                <!--th:text="#{button.addFriend.text}"></button>-->
+                <!--</td>-->
+                <!--<ul id="confirmError"></ul>-->
 
-                                    <td>
-                                        <button th:data-id="${note.id}" class="btn btn-danger custom-width" id="ignoreFriendButton"
-                                                th:text="#{button.ignore.text}"></button>
-                                    </td>
+                <!--<td>-->
+                <!--<button th:data-id="${note.id}" class="btn btn-danger custom-width" id="ignoreFriendButton"-->
+                <!--th:text="#{button.ignore.text}"></button>-->
+                <!--</td>-->
 
-                                </tr>
-                            </div>
-                            </tbody>
-                        </div>
-                    </div>
-                </table>
+                <!--</tr>-->
+                <!--</div>-->
+                <!--</tbody>-->
+                <!--</div>-->
             </div>
+            <!--</table>-->
+            <!--</div>-->
 
             <div class="pull-left">
 
-                <span><input type="text" class="form-control" name="findUsers" id="findUsers" th:placeholder="#{user.find.label}" autofocus="autofocus">
-                <button type="button" id="searchUser">Find</button></span>
-
-
-                <br>
-                <ul id="foundUserUl" class="input-group"></ul>
+                <input type="text" class="form-control" style="display: inline; width: 70%" name="findUsers" id="findUsers" th:placeholder="#{user.find.label}"
+                       autofocus="autofocus">
+                <button type="button" id="searchUser" class="btn custom-width" style="background-color: #D7E4F5;color: #000000">Find</button>
+                <br><br>
+                <ul id="foundUserUl"></ul>
                 <ul id="noUserFoundUl"></ul>
             </div>
             <div class="tablecontainer">
@@ -141,4 +134,11 @@
     </div>
 </div>
 </body>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js/}"></script>
+<script type="text/javascript" th:src="@{/js/users.js/}"></script>
 </html>

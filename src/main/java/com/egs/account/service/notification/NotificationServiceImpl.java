@@ -48,10 +48,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void notify(Notification notification, String username) {
-        messagingTemplate.convertAndSendToUser(
-                username,
-                "/topic/notify",
-                notification
-        );
+        messagingTemplate.convertAndSendToUser(username, "/notify", notification);
     }
 }

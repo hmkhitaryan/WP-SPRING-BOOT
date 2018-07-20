@@ -60,7 +60,7 @@ public class FriendshipController extends BaseController {
 
     @RequestMapping(value = UrlMapping.ADD_FRIEND, method = RequestMethod.POST)
     public @ResponseBody
-    JsonResponse sendFriendRequest(@RequestParam(RECEIVER_USERNAME) String receiverUsername, HttpServletResponse response) {
+    JsonResponse sendFriendRequest(@RequestParam(RECEIVER_USERNAME) String receiverUsername, HttpServletResponse response) throws IOException {
         final String initiatorUsername = utilsService.getUserPrincipalName(context);
         if (expiredSession(response, initiatorUsername)) {
             return new JsonResponse("FAILED", "Your session is expired, go to login page");
@@ -107,9 +107,11 @@ public class FriendshipController extends BaseController {
             message = "Requested user not found";
         }
         final Friendship friendship = friendshipService.findByReceiver(receiverUser);
-        friendshipService.delete(friendship);
-
-        return userValidator.processValidate(failed, message);
+        if (friendship != null) {
+            friendshipService.delete(friendship);
+            return userValidator.processValidate(failed, message);
+        }
+        return new JsonResponse("FAIL", "Sorry, but you are not friends");
     }
 
     @RequestMapping(value = UrlMapping.IGNORE_FRIEND, method = RequestMethod.POST)
@@ -123,7 +125,7 @@ public class FriendshipController extends BaseController {
     private JsonResponse sendNotificationForFriendship(User initiatorUser, User receiverUser) {
         final Notification notification = new Notification(initiatorUser, receiverUser, "Friend request");
         notificationService.save(notification);
-        notificationService.notify(notification, receiverUser.getUsername());
+//        notificationService.notify(notification, receiverUser.getUsername());
 
         return new JsonResponse(SUCCESS, "Your request for adding friend is sent");
     }

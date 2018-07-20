@@ -42,6 +42,10 @@ public class User {
     @JsonIgnore
     private Set<Catalog> catalogs;
 
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private VerificationToken token;
+
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    private Set<Notification> notifications;
 
@@ -52,9 +56,6 @@ public class User {
     public void setToken(VerificationToken token) {
         this.token = token;
     }
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    private VerificationToken token;
 
     public User(String username, Set<Role> roles) {
         this.username = username;

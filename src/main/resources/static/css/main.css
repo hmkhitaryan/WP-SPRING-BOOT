@@ -43,7 +43,6 @@ body:before {
 }
 
 .form-control {
-    width: 100%;
     min-height: 38px;
     font-size: 15px;
     border: 1px solid #c8c8c8;
